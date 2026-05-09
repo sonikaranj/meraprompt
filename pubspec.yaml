@@ -1,4 +1,4 @@
-name: aiimagegenerator2
+name: promptseen
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -18,6 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 version: 1.0.0+1
 
+
+
 environment:
   sdk: ^3.7.2
 
@@ -34,26 +36,50 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  firebase_core: ^3.15.1
   flutter_screenutil: ^5.9.3
   get: ^4.7.2
-  google_mobile_ads: ^6.0.0
-  carousel_slider: ^5.1.1
-  image_picker: ^1.1.2
+  image_picker: ^1.2.1
   http: ^1.4.0
-  firebase_remote_config: ^5.4.7
   image_cropper: ^9.1.0
   permission_handler: ^12.0.1
   toast_service: ^0.0.1
   url_launcher: ^6.3.1
   path_provider: ^2.1.5
-  image_gallery_saver: ^2.0.3
   share_plus: ^11.0.0
   in_app_review: ^2.0.10
-  cached_network_image: ^3.4.1
   shimmer: ^3.0.0
-  fluttertoast: ^8.2.12
-  smooth_page_indicator: ^1.2.1
+#  fluttertoast: ^8.2.12
+#  google_fonts: ^6.2.1
+  connectivity_plus: ^6.1.4
+  shared_preferences: ^2.5.3
+  device_info_plus: ^11.5.0
+  package_info_plus: ^8.3.0
+  launch_review: ^3.0.1
+  app_tracking_transparency: ^2.0.6+1
+  webview_flutter: ^4.13.0
+  intl: ^0.20.2
+  in_app_purchase: ^3.2.3
+  cached_network_image: ^3.4.1
+  purchases_flutter: ^9.5.0
+  google_mobile_ads: ^6.0.0
+  carousel_slider: ^5.1.1
+  flutter_image_compress: ^2.4.0
+  image: ^4.5.0
+  pdf: ^3.11.2
+  dio: ^5.9.1
+  file_picker: ^10.3.10
+  syncfusion_flutter_pdf: ^31.1.19
+  youtube_player_flutter: ^9.1.3
+  flutter_markdown_plus: ^1.0.7
+  open_filex: ^4.7.0
+  get_storage: ^2.1.1
+  change_app_package_name: ^1.5.0
+
+
+
+
+
+
 
 dev_dependencies:
   flutter_test:
@@ -78,8 +104,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - asset/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

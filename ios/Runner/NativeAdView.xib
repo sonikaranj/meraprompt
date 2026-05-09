@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="GADNativeAdView">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="300"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <!-- Icon -->
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="icon">
+                    <rect key="frame" x="16" y="16" width="60" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="icon-width"/>
+                        <constraint firstAttribute="height" constant="60" id="icon-height"/>
+                    </constraints>
+                </imageView>
+
+                <!-- Headline -->
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Headline" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="headline">
+                    <rect key="frame" x="88" y="16" width="310" height="21"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+
+                <!-- Star Rating -->
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="starRating">
+                    <rect key="frame" x="88" y="45" width="80" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="80" id="star-width"/>
+                        <constraint firstAttribute="height" constant="15" id="star-height"/>
+                    </constraints>
+                </imageView>
+
+                <!-- Ad Image -->
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="image">
+                    <rect key="frame" x="16" y="88" width="382" height="120"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="120" id="image-height"/>
+                    </constraints>
+                </imageView>
+
+                <!-- Body -->
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Body text" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="body">
+                    <rect key="frame" x="16" y="220" width="382" height="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.8" green="0.8" blue="0.8" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+
+                <!-- Call to Action Button -->
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="callToAction">
+                    <rect key="frame" x="16" y="252" width="382" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="cta-height"/>
+                    </constraints>
+                    <state key="normal" title="Call to Action">
+                        <color key="titleColor" red="0" green="0" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <color key="backgroundColor" red="1" green="0.843" blue="0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" red="0.1" green="0.1" blue="0.1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="icon" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="icon-leading"/>
+                <constraint firstItem="icon" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="16" id="icon-top"/>
+
+                <constraint firstItem="headline" firstAttribute="leading" secondItem="icon" secondAttribute="trailing" constant="12" id="headline-leading"/>
+                <constraint firstItem="headline" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" constant="-16" id="headline-trailing"/>
+                <constraint firstItem="headline" firstAttribute="top" secondItem="icon" secondAttribute="top" id="headline-top"/>
+
+                <constraint firstItem="starRating" firstAttribute="leading" secondItem="headline" secondAttribute="leading" id="star-leading"/>
+                <constraint firstItem="starRating" firstAttribute="top" secondItem="headline" secondAttribute="bottom" constant="8" id="star-top"/>
+
+                <constraint firstItem="image" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="image-leading"/>
+                <constraint firstItem="image" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" constant="-16" id="image-trailing"/>
+                <constraint firstItem="image" firstAttribute="top" secondItem="icon" secondAttribute="bottom" constant="12" id="image-top"/>
+
+                <constraint firstItem="body" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="body-leading"/>
+                <constraint firstItem="body" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" constant="-16" id="body-trailing"/>
+                <constraint firstItem="body" firstAttribute="top" secondItem="image" secondAttribute="bottom" constant="12" id="body-top"/>
+
+                <constraint firstItem="callToAction" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="cta-leading"/>
+                <constraint firstItem="callToAction" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" constant="-16" id="cta-trailing"/>
+                <constraint firstItem="callToAction" firstAttribute="top" secondItem="body" secondAttribute="bottom" constant="12" id="cta-top"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="callToAction" secondAttribute="bottom" constant="8" id="cta-bottom"/>
+            </constraints>
+            <connections>
+                <outlet property="bodyView" destination="body" id="body-outlet"/>
+                <outlet property="callToActionView" destination="callToAction" id="cta-outlet"/>
+                <outlet property="headlineView" destination="headline" id="headline-outlet"/>
+                <outlet property="iconView" destination="icon" id="icon-outlet"/>
+                <outlet property="imageView" destination="image" id="image-outlet"/>
+                <outlet property="starRatingView" destination="starRating" id="star-outlet"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="154"/>
+        </view>
+    </objects>
+</document>

@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:aiimagegenerator2/comman/serviceapp/toast_service.dart';
-import 'package:aiimagegenerator2/const.dart';
+import 'package:promptseen/comman/serviceapp/toast_service.dart';
+import 'package:promptseen/const.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -42,9 +42,9 @@ class ImagePreviewController extends GetxController {
     try {
       await file.delete();
       images.remove(file);
-      ToastService.showToast(message: "Image deleted");
+      // ToastService.showToast(message: "Image deleted");
     } catch (e) {
-      ToastService.showToast(message: "Could not delete image");
+      // ToastService.showToast(message: "Could not delete image");
     }
   }
 
@@ -52,7 +52,7 @@ class ImagePreviewController extends GetxController {
     try {
       await Share.shareXFiles([XFile(file.path)], text: "Check out this image!");
     } catch (e) {
-      ToastService.showToast(message: "Failed to share image");
+      // ToastService.showToast(message: "Failed to share image");
      }
   }
 }
@@ -69,12 +69,41 @@ class ImagePreviewScreen extends StatelessWidget {
       appBar: AppBar(
 
         backgroundColor: AppColor.black,
-        title: Text('Saved Images', style: TextStyle(color: AppColor.white)),
+        // title: Text('Saved Images', style: TextStyle(color: AppColor.white)),
       ),
       body: Obx(() {
         if (controller.images.isEmpty) {
           return Center(
-            child: Text('No images found.', style: TextStyle(color: AppColor.white)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.image_not_supported,
+                      size: 80, color: Colors.deepPurpleAccent.withOpacity(0.5)),
+                  SizedBox(height: 20),
+                  Text(
+                    'No Images Found',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'You haven’t generated or uploaded any images yet.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 30),
+
+                ],
+              ),
+            ),
           );
         }
         return GridView.builder(
@@ -115,7 +144,7 @@ class ImagePreviewScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.delete, color: Colors.red),
+              leading: Icon(Icons.delete, color: Colors.deepPurpleAccent),
               title: Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
@@ -177,8 +206,8 @@ class FullImageView extends StatelessWidget {
       content: Text("Are you sure you want to delete this image?",
           style: TextStyle(color: AppColor.white)),
       confirm: ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-        child: Text("Delete"),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurpleAccent),
+        child: Text("Delete",style: TextStyle(color: Colors.white),),
         onPressed: () {
           controller.deleteImage(file);
           Get.back(); // Close dialog
