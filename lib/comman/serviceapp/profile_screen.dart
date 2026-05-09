@@ -21,6 +21,15 @@ class _ProfileScreenState extends State<ProfileScreen>
   final String privacyPolicyUrl = "${AppConfig.privacyPolicyUrl}";
   final String supportEmail = "${AppConfig.supportEmail}";
 
+  // PromptMera Brand Colors
+  static const Color _bgDeep      = Color(0xFF0D0E1A);
+  static const Color _bgCard      = Color(0xFF13152B);
+  static const Color _bgCardLight = Color(0xFF1A1D35);
+  static const Color _purple      = Color(0xFFAA6EE8);
+  static const Color _teal        = Color(0xFF3EC6C6);
+  static const Color _purpleLight = Color(0xFFCC99FF);
+  static const Color _borderColor = Color(0xFF2A2D4A);
+
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late AnimationController _scaleController;
@@ -35,51 +44,21 @@ class _ProfileScreenState extends State<ProfileScreen>
   void initState() {
     super.initState();
 
-    // Main fade-in animation
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    // Slide animation for content
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    // Scale animation for header
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 900),
-      vsync: this,
-    );
-
-    // Floating particles animation
-    _floatingController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    )..repeat(reverse: true);
+    _fadeController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+    _slideController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
+    _scaleController = AnimationController(duration: const Duration(milliseconds: 900), vsync: this);
+    _floatingController = AnimationController(duration: const Duration(seconds: 3), vsync: this)
+      ..repeat(reverse: true);
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.4),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
-
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
+    _slideAnimation = Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(
+        CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
-    );
-
+        CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack));
     _floatingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
-    );
+        CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut));
 
-    // Staggered animations
     Future.delayed(const Duration(milliseconds: 100), () {
       _fadeController.forward();
       _slideController.forward();
@@ -100,29 +79,23 @@ class _ProfileScreenState extends State<ProfileScreen>
     final random = Random(index);
     final startX = random.nextDouble() * size.width;
     final startY = random.nextDouble() * size.height;
+    final color = index % 2 == 0 ? _purple : _teal;
 
     return AnimatedBuilder(
       animation: _floatingAnimation,
       builder: (context, child) {
         final offsetY = sin((index + _floatingAnimation.value * pi * 2)) * 30;
         final offsetX = cos((index + _floatingAnimation.value * pi * 2)) * 20;
-
         return Positioned(
           left: startX + offsetX,
           top: startY + offsetY,
           child: Container(
-            width: 3 + random.nextDouble() * 6,
-            height: 3 + random.nextDouble() * 6,
+            width: 3 + random.nextDouble() * 5,
+            height: 3 + random.nextDouble() * 5,
             decoration: BoxDecoration(
-              color: const Color(0xFFec5b13).withOpacity(0.15 + random.nextDouble() * 0.2),
+              color: color.withOpacity(0.12 + random.nextDouble() * 0.18),
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFec5b13).withOpacity(0.3),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                ),
-              ],
+              boxShadow: [BoxShadow(color: color.withOpacity(0.25), blurRadius: 10, spreadRadius: 1)],
             ),
           ),
         );
@@ -141,98 +114,57 @@ class _ProfileScreenState extends State<ProfileScreen>
               margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF0a0604).withOpacity(0.95),
-                    const Color(0xFF0a0604).withOpacity(0.8),
-                  ],
+                  colors: [_bgCard, _bgCardLight],
                 ),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: const Color(0xFFec5b13).withOpacity(0.25),
-                  width: 1.5,
-                ),
+                border: Border.all(color: _purple.withOpacity(0.22), width: 1.5),
                 boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFec5b13).withOpacity(0.2),
-                    blurRadius: 32,
-                    offset: const Offset(0, 12),
-                  ),
+                  BoxShadow(color: _purple.withOpacity(0.18), blurRadius: 40, offset: const Offset(0, 14)),
+                  BoxShadow(color: _teal.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Avatar Container
                   Container(
-                    width: 96,
-                    height: 96,
+                    width: 96, height: 96,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFFec5b13),
-                          Color(0xFFec5b13),
-                        ],
+                        colors: [_purple, _teal],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFec5b13).withOpacity(0.5),
-                          blurRadius: 24,
-                          spreadRadius: 4,
-                        ),
-                      ],
+                      boxShadow: [BoxShadow(color: _purple.withOpacity(0.45), blurRadius: 28, spreadRadius: 4)],
                     ),
-                    child: const Icon(
-                      Icons.pages_rounded,
-                      color: Colors.white,
-                      size: 48,
-                    ),
+                    child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 46),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Prompt Seen',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                    ),
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                        colors: [_purple, _teal]).createShader(bounds),
+                    child: const Text('PromptMera',
+                        style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold,
+                            color: Colors.white, letterSpacing: -0.5)),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Your AI-Powered Companion',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[400],
-                      letterSpacing: 0.3,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  Text('Smart AI Prompts for Unlimited Creativity',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 13, color: Colors.grey[400], letterSpacing: 0.3)),
                   const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFec5b13).withOpacity(0.12),
+                      color: _purple.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: const Color(0xFFec5b13).withOpacity(0.3),
-                        width: 1,
-                      ),
+                      border: Border.all(color: _purple.withOpacity(0.28), width: 1),
                     ),
-                    child: const Text(
-                      'v1.0.0 • Build 2024',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFec5b13),
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
+                    child: const Text('v1.0.0 • Build 2024',
+                        style: TextStyle(fontSize: 12, color: _purpleLight,
+                            fontWeight: FontWeight.w500, letterSpacing: 0.5)),
                   ),
                 ],
               ),
@@ -250,6 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     required VoidCallback onTap,
     Color? accentColor,
   }) {
+    final accent = accentColor ?? _purple;
     return Container(
       margin: const EdgeInsets.fromLTRB(24, 0, 24, 12),
       child: Material(
@@ -257,82 +190,43 @@ class _ProfileScreenState extends State<ProfileScreen>
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
-          splashColor: const Color(0xFFec5b13).withOpacity(0.1),
-          hoverColor: const Color(0xFFec5b13).withOpacity(0.05),
+          splashColor: accent.withOpacity(0.1),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF0a0604).withOpacity(0.7),
-                  const Color(0xFF0a0604).withOpacity(0.5),
-                ],
+                colors: [_bgCard.withOpacity(0.9), _bgCardLight.withOpacity(0.7)],
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: (accentColor ?? const Color(0xFFec5b13)).withOpacity(0.2),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: (accentColor ?? const Color(0xFFec5b13)).withOpacity(0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              border: Border.all(color: _borderColor.withOpacity(0.8), width: 1),
+              boxShadow: [BoxShadow(color: accent.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 4))],
             ),
             child: Row(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 52, height: 52,
                   decoration: BoxDecoration(
-                    color: (accentColor ?? const Color(0xFFec5b13)).withOpacity(0.15),
+                    color: accent.withOpacity(0.13),
                     borderRadius: BorderRadius.circular(13),
-                    border: Border.all(
-                      color: (accentColor ?? const Color(0xFFec5b13)).withOpacity(0.2),
-                      width: 1,
-                    ),
+                    border: Border.all(color: accent.withOpacity(0.22), width: 1),
                   ),
-                  child: Icon(
-                    icon,
-                    color: accentColor ?? const Color(0xFFec5b13),
-                    size: 26,
-                  ),
+                  child: Icon(icon, color: accent, size: 26),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
+                      Text(title, style: const TextStyle(fontSize: 16,
+                          fontWeight: FontWeight.w600, color: Colors.white, letterSpacing: -0.2)),
                       const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
-                          letterSpacing: 0.2,
-                        ),
-                      ),
+                      Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey[500], letterSpacing: 0.2)),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16,
-                  color: Colors.grey[600],
-                ),
+                Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey[600]),
               ],
             ),
           ),
@@ -347,23 +241,19 @@ class _ProfileScreenState extends State<ProfileScreen>
       child: Row(
         children: [
           Container(
-            width: 4,
-            height: 24,
+            width: 4, height: 24,
             decoration: BoxDecoration(
-              color: const Color(0xFFec5b13),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [_purple, _teal],
+              ),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: -0.3,
-            ),
-          ),
+          Text(title, style: const TextStyle(fontSize: 18,
+              fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: -0.3)),
         ],
       ),
     );
@@ -372,30 +262,34 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Scaffold(
-      backgroundColor: const Color(0xFF0a0604),
+      backgroundColor: _bgDeep,
       body: Stack(
         children: [
-          // Animated background gradient
+          // Purple radial glow top-right
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: RadialGradient(
-                center: Alignment.topRight,
-                radius: 1.8,
-                colors: [
-                  Color(0xFF0a0604),
-                  Color(0xFF0a0604),
-                ],
-                stops: [0.0, 1.0],
+                center: const Alignment(0.7, -0.8),
+                radius: 1.4,
+                colors: [_purple.withOpacity(0.12), _bgDeep],
+                stops: const [0.0, 0.65],
               ),
             ),
           ),
-
-          // Floating particles
+          // Teal glow bottom-left
+          Positioned(
+            bottom: -80, left: -60,
+            child: Container(
+              width: 280, height: 280,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                    colors: [_teal.withOpacity(0.08), Colors.transparent]),
+              ),
+            ),
+          ),
           ...List.generate(12, (index) => _buildFloatingGlow(size, index)),
-
-          // Main content
           SafeArea(
             child: FadeTransition(
               opacity: _fadeAnimation,
@@ -406,61 +300,25 @@ class _ProfileScreenState extends State<ProfileScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header section
                       _buildHeader(),
-
                       const SizedBox(height: 16),
-
-                      // Account section
                       _buildSectionHeader('Account'),
-                      _buildMenuTile(
-                        icon: Icons.privacy_tip_rounded,
-                        title: 'Privacy Policy',
-                        subtitle: 'How we protect your data',
-                        accentColor: const Color(0xFFec5b13),
-                        onTap: () {
-                          Get.to(() => PrivacyScreen());
-                        },
-                      ),
-                      _buildMenuTile(
-                        icon: Icons.description_rounded,
-                        title: 'Terms & Conditions',
-                        subtitle: 'Legal agreements',
-                        accentColor: const Color(0xFFec5b13),
-                        onTap: () {
-                          Get.to(() => Termsscreen());
-                        },
-                      ),
-
-                      // Support section
+                      _buildMenuTile(icon: Icons.privacy_tip_rounded, title: 'Privacy Policy',
+                          subtitle: 'How we protect your data', accentColor: _purple,
+                          onTap: () => Get.to(() => PrivacyScreen())),
+                      _buildMenuTile(icon: Icons.description_rounded, title: 'Terms & Conditions',
+                          subtitle: 'Legal agreements', accentColor: _purple,
+                          onTap: () => Get.to(() => Termsscreen())),
                       _buildSectionHeader('Support & Feedback'),
-                      _buildMenuTile(
-                        icon: Icons.share_rounded,
-                        title: 'Share App',
-                        subtitle: 'Tell your friends',
-                        accentColor: const Color(0xFF10B981),
-                        onTap: () => Share.share(
-                          "Discover Prompt Seen - Your AI-Powered Companion! $appShareLink",
-                        ),
-                      ),
-                      _buildMenuTile(
-                        icon: Icons.star_rounded,
-                        title: 'Rate Us',
-                        subtitle: 'Leave a review',
-                        accentColor: const Color(0xFFF59E0B),
-                        onTap: () async {
-                          await RatingService.requestReview();
-                        },
-                      ),
-                      _buildMenuTile(
-                        icon: Icons.mail_rounded,
-                        title: 'Contact Support',
-                        subtitle: 'Get help & feedback',
-                        accentColor: const Color(0xFFEC4899),
-                        onTap: () => _launchEmail(),
-                      ),
-
-                      // About section
+                      _buildMenuTile(icon: Icons.share_rounded, title: 'Share App',
+                          subtitle: 'Tell your friends', accentColor: _teal,
+                          onTap: () => Share.share("Discover PromptMera! $appShareLink")),
+                      _buildMenuTile(icon: Icons.star_rounded, title: 'Rate Us',
+                          subtitle: 'Leave a review', accentColor: const Color(0xFFFFCB47),
+                          onTap: () async => await RatingService.requestReview()),
+                      _buildMenuTile(icon: Icons.mail_rounded, title: 'Contact Support',
+                          subtitle: 'Get help & feedback', accentColor: const Color(0xFFFF6B9D),
+                          onTap: _launchEmail),
                       _buildSectionHeader('About'),
                       Container(
                         margin: const EdgeInsets.fromLTRB(24, 0, 24, 32),
@@ -469,16 +327,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [
-                              const Color(0xFF0a0604).withOpacity(0.6),
-                              const Color(0xFF0a0604).withOpacity(0.4),
-                            ],
+                            colors: [_bgCard.withOpacity(0.8), _bgCardLight.withOpacity(0.6)],
                           ),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: const Color(0xFFec5b13).withOpacity(0.2),
-                            width: 1,
-                          ),
+                          border: Border.all(color: _purple.withOpacity(0.2), width: 1),
+                          boxShadow: [BoxShadow(color: _purple.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, 6))],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -486,50 +339,26 @@ class _ProfileScreenState extends State<ProfileScreen>
                             Row(
                               children: [
                                 Container(
-                                  width: 40,
-                                  height: 40,
+                                  width: 44, height: 44,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFFec5b13),
-                                        Color(0xFFec5b13),
-                                      ],
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFFec5b13).withOpacity(0.4),
-                                        blurRadius: 12,
-                                        spreadRadius: 2,
-                                      ),
-                                    ],
+                                    gradient: const LinearGradient(colors: [_purple, _teal]),
+                                    boxShadow: [BoxShadow(color: _purple.withOpacity(0.4), blurRadius: 14, spreadRadius: 2)],
                                   ),
-                                  child: const Icon(
-                                    Icons.pages_rounded,
-                                    color: Colors.white,
-                                    size: 22,
-                                  ),
+                                  child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 22),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        'Prompt Seen',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                      ShaderMask(
+                                        shaderCallback: (bounds) => const LinearGradient(
+                                            colors: [_purple, _teal]).createShader(bounds),
+                                        child: const Text('PromptMera',
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                                       ),
-                                      Text(
-                                        'v1.0.0',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[500],
-                                        ),
-                                      ),
+                                      Text('v1.0.0', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
                                     ],
                                   ),
                                 ),
@@ -537,18 +366,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Prompt Seen is your intelligent AI companion designed to help you explore, create, and innovate. Powered by cutting-edge AI technology.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey[400],
-                                height: 1.6,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
+                                'PromptMera is your AI-powered creative companion, crafted to help you explore, generate, and master prompts for every AI tool. Powered by advanced generative models.',
+                                style: TextStyle(fontSize: 13, color: Colors.grey[400], height: 1.6, letterSpacing: 0.2)),
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -562,12 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _launchEmail() async {
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: supportEmail,
-    );
-    if (await canLaunchUrl(emailLaunchUri)) {
-      await launchUrl(emailLaunchUri);
-    }
+    final Uri emailLaunchUri = Uri(scheme: 'mailto', path: supportEmail);
+    if (await canLaunchUrl(emailLaunchUri)) await launchUrl(emailLaunchUri);
   }
 }
