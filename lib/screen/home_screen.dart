@@ -16,7 +16,7 @@ class HomeScreen extends GetView<HomeController> {
   static const Color primaryGradient2 = Color(0xFF00BCD4); // Cyan
   static const Color darkBg = Color(0xFF0a0604);
   static const Color darkCardBg = Color(0xFF14100D);
-  static const Color accentOrange = Color(0xFFec5b13);
+  static  Color accentOrange =  Color(0xFF6750A4).withValues(alpha: 0.15);
 
   @override
   Widget build(BuildContext context) {

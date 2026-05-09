@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,46 +8,70 @@ import 'package:url_launcher/url_launcher.dart';
 class DetailScreen extends GetView<DetailController> {
   const DetailScreen({Key? key}) : super(key: key);
 
+  static const Color _bgDeep      = Color(0xFF0D0E1A);
+  static const Color _bgCard      = Color(0xFF13152B);
+  static const Color _bgCardLight = Color(0xFF1A1D35);
+  static const Color _purple      = Color(0xFFAA6EE8);
+  static const Color _teal        = Color(0xFF3EC6C6);
+  static const Color _purpleLight = Color(0xFFCC99FF);
+  static const Color _borderColor = Color(0xFF2A2D4A);
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DetailController>(
       builder: (controller) {
         return Scaffold(
-          backgroundColor: const Color(0xFF221610),
+          backgroundColor: _bgDeep,
           body: Stack(
             children: [
-              // Main content
+              // Purple radial glow — top right
+              Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(0.8, -0.9),
+                    radius: 1.3,
+                    colors: [_purple.withOpacity(0.10), _bgDeep],
+                    stops: const [0.0, 0.6],
+                  ),
+                ),
+              ),
+              // Teal glow — bottom left
+              Positioned(
+                bottom: -80, left: -60,
+                child: Container(
+                  width: 260, height: 260,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [_teal.withOpacity(0.07), Colors.transparent],
+                    ),
+                  ),
+                ),
+              ),
+
               CustomScrollView(
                 slivers: [
-                  // Header
                   SliverAppBar(
-                    backgroundColor: const Color(0xFF221610),
+                    backgroundColor: _bgDeep,
                     elevation: 0,
                     leading: GestureDetector(
                       onTap: () => Get.back(),
                       child: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF3a2d26),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
+                          color: _bgCard,
+                          border: Border.all(color: _borderColor, width: 1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Colors.white,
-                          size: 18,
-                        ),
+                        child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
                       ),
                     ),
-                    title: Text(
-                      'Prompt Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    title: ShaderMask(
+                      shaderCallback: (bounds) =>
+                          const LinearGradient(colors: [_purple, _teal]).createShader(bounds),
+                      child: const Text(
+                        'Prompt Details',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
                     centerTitle: true,
@@ -55,225 +80,164 @@ class DetailScreen extends GetView<DetailController> {
                         onTap: () {
                           showMenu(
                             context: context,
-                            position: RelativeRect.fromLTRB(100, 50, 0, 0),
+                            color: _bgCardLight,
+                            position: const RelativeRect.fromLTRB(100, 50, 0, 0),
                             items: [
                               PopupMenuItem(
+                                onTap: () => controller.sharePrompt(),
                                 child: Row(
-                                  children: [
-                                    Icon(Icons.share, color: Colors.white),
+                                  children: const [
+                                    Icon(Icons.share, color: _teal),
                                     SizedBox(width: 12),
-                                    Text('Share',
-                                        style: TextStyle(color: Colors.white)),
+                                    Text('Share', style: TextStyle(color: Colors.white)),
                                   ],
                                 ),
-                                onTap: () => controller.sharePrompt(),
                               ),
-                              // PopupMenuItem(
-                              //   child: Row(
-                              //     children: [
-                              //       Icon(Icons.delete, color: Colors.red),
-                              //       SizedBox(width: 12),
-                              //       Text('Delete',
-                              //           style: TextStyle(color: Colors.red)),
-                              //     ],
-                              //   ),
-                              //   onTap: () {},
-                              // ),
                             ],
                           );
                         },
                         child: Container(
                           margin: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3a2d26),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
-                              width: 1,
-                            ),
+                            color: _bgCard,
+                            border: Border.all(color: _borderColor, width: 1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(
-                            Icons.more_vert,
-                            color: Colors.white,
-                            size: 18,
-                          ),
+                          child: const Icon(Icons.more_vert, color: Colors.white, size: 18),
                         ),
                       ),
                     ],
                   ),
-                  // Main Image
+
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: _buildMainImage(controller),
                     ),
                   ),
-                  // Prompt Card
+
+                  // Prompt Card with typewriter
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: _buildPromptCard(controller),
+                      child: _TypingPromptCard(
+                        promptText: controller.prompt.promptText,
+                      ),
                     ),
                   ),
-                  // Action Buttons
+
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: _buildActionButtons(controller),
                     ),
                   ),
-                  // Generate Button
+
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: _buildGenerateButtons(controller),
                     ),
                   ),
-                  // Related Section
-                  // SliverToBoxAdapter(
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.all(20),
-                  //     child: _buildRelatedSection(),
-                  //   ),
-                  // ),
-                  // // Bottom padding
-                  SliverToBoxAdapter(
-                    child: SizedBox(height: 100),
-                  ),
+
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
                 ],
               ),
             ],
           ),
-
         );
       },
     );
   }
 
   Widget _buildMainImage(DetailController controller) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Stack(
-        children: [
-          // Image
-          CachedNetworkImage(
-            imageUrl: controller.prompt.imageUrl,
-            fit: BoxFit.cover,
-            height: 400,
-            width: double.infinity,
-            placeholder: (context, url) => Container(
-              height: 400,
-              color: const Color(0xFF3a2d26),
-              child: Center(
-                child: CircularProgressIndicator(
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    Color(0xFFec5b13),
-                  ),
-                ),
-              ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              height: 400,
-              color: const Color(0xFF3a2d26),
-              child: Icon(
-                Icons.image_not_supported,
-                color: Colors.grey[600],
-                size: 50,
-              ),
-            ),
-          ),
-          // Top-left share button
-          Positioned(
-            top: 16,
-            left: 16,
-            child: GestureDetector(
-              onTap: () => controller.sharePrompt(),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF3a2d26),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  Icons.share,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
-          // Top-right favorite button
-          Positioned(
-            top: 16,
-            right: 16,
-            child: GestureDetector(
-              onTap: () => controller.toggleFavorite(),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF3a2d26),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Icon(
-                  controller.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: controller.isFavorite ? Colors.red : Colors.white,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPromptCard(DetailController controller) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF3a2d26),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Label
-          Text(
-            'PROMPT STRING',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-              color: const Color(0xFFec5b13),
-            ),
-          ),
-          SizedBox(height: 10),
-          // Prompt text
-          Text(
-            controller.prompt.promptText,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-              color: Colors.white.withOpacity(0.9),
-              height: 1.6,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: _purple.withOpacity(0.20), blurRadius: 32, offset: const Offset(0, 12)),
+          BoxShadow(color: _teal.withOpacity(0.08), blurRadius: 16, offset: const Offset(0, 4)),
         ],
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [_purple.withOpacity(0.5), _teal.withOpacity(0.4)],
+        ),
+      ),
+      padding: const EdgeInsets.all(1.5),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18.5),
+        child: Stack(
+          children: [
+            CachedNetworkImage(
+              imageUrl: controller.prompt.imageUrl,
+              fit: BoxFit.cover,
+              height: 400,
+              width: double.infinity,
+              placeholder: (context, url) => Container(
+                height: 400,
+                color: _bgCard,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(_purple),
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                height: 400,
+                color: _bgCard,
+                child: Icon(Icons.image_not_supported, color: Colors.grey[600], size: 50),
+              ),
+            ),
+            Positioned(
+              bottom: 0, left: 0, right: 0,
+              child: Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [_bgDeep.withOpacity(0.6), Colors.transparent],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 16, left: 16,
+              child: GestureDetector(
+                onTap: () => controller.sharePrompt(),
+                child: Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _bgCard.withOpacity(0.85),
+                    border: Border.all(color: _teal.withOpacity(0.35), width: 1),
+                  ),
+                  child: const Icon(Icons.share, color: _teal, size: 16),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 16, right: 16,
+              child: GestureDetector(
+                onTap: () => controller.toggleFavorite(),
+                child: Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _bgCard.withOpacity(0.85),
+                    border: Border.all(color: _purple.withOpacity(0.35), width: 1),
+                  ),
+                  child: Icon(
+                    controller.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: controller.isFavorite ? const Color(0xFFFF6B9D) : Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -286,8 +250,6 @@ class DetailScreen extends GetView<DetailController> {
           label: 'Copy',
           onTap: () => controller.copyPrompt(),
         ),
-
-
       ],
     );
   }
@@ -301,32 +263,28 @@ class DetailScreen extends GetView<DetailController> {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: const Color(0xFF3a2d26),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [_bgCard, _bgCardLight],
             ),
+            border: Border.all(color: _purple.withOpacity(0.25), width: 1),
             borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(color: _purple.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 4)),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                color: const Color(0xFFec5b13),
-                size: 18,
-              ),
-              SizedBox(height: 4),
+            children: const [
+              Icon(Icons.content_copy, color: _teal, size: 20),
+              SizedBox(height: 6),
               Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                  color: Colors.white,
-                ),
+                'Copy',
+                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5, color: Colors.white),
               ),
             ],
           ),
@@ -337,24 +295,27 @@ class DetailScreen extends GetView<DetailController> {
 
   Widget _buildGenerateButtons(DetailController controller) {
     final promptText = controller.prompt.promptText.trim();
-
     return Column(
       children: [
         _buildGenerateButtonTile(
           label: 'Generate with Gemini',
           icon: Icons.auto_awesome,
-          onTap: () => _copyPromptAndOpenAi(
+          gradientColors: const [Color(0xFF7B4FD4), Color(0xFF3EC6C6)],
+          glowColor: _purple,
+          onTap: () => _openAiWithPrompt(
             controller,
             promptText: promptText,
             baseUrl: 'https://gemini.google.com/app',
-            queryParam: 'prompt',
+            queryParam: 'q',
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         _buildGenerateButtonTile(
           label: 'Generate with ChatGPT',
           icon: Icons.smart_toy_outlined,
-          onTap: () => _copyPromptAndOpenAi(
+          gradientColors: const [Color(0xFF3EC6C6), Color(0xFF6A5ACD)],
+          glowColor: _teal,
+          onTap: () => _openAiWithPrompt(
             controller,
             promptText: promptText,
             baseUrl: 'https://chatgpt.com/',
@@ -365,53 +326,30 @@ class DetailScreen extends GetView<DetailController> {
     );
   }
 
-  Future<void> _copyPromptAndOpenAi(
-    DetailController controller, {
-    required String promptText,
-    required String baseUrl,
-    required String queryParam,
-  }) async {
-    if (promptText.isEmpty) {
-      Get.snackbar(
-        'Prompt missing',
-        'No prompt text available to open.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    controller.copyPrompt();
-    await _openAiUrl(
-      promptText,
-      baseUrl: baseUrl,
-      queryParam: queryParam,
-    );
-  }
-
   Widget _buildGenerateButtonTile({
     required String label,
     required IconData icon,
+    required List<Color> gradientColors,
+    required Color glowColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 56,
+        height: 58,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFec5b13),
-              Color(0xFF4a342a),
-            ],
+            colors: gradientColors,
           ),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFec5b13).withOpacity(0.4),
+              color: glowColor.withOpacity(0.35),
               blurRadius: 20,
               spreadRadius: 0,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -426,6 +364,7 @@ class DetailScreen extends GetView<DetailController> {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
+                letterSpacing: 0.2,
               ),
             ),
           ],
@@ -434,93 +373,350 @@ class DetailScreen extends GetView<DetailController> {
     );
   }
 
-  Future<void> _openAiUrl(
-    String promptText, {
-    required String baseUrl,
-    required String queryParam,
-  }) async {
+  /// Copies the prompt AND opens the AI app with the prompt pre-filled
+  Future<void> _openAiWithPrompt(
+      DetailController controller, {
+        required String promptText,
+        required String baseUrl,
+        required String queryParam,
+      }) async {
+    if (promptText.isEmpty) {
+      Get.snackbar('Prompt missing', 'No prompt text available.',
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
 
-    final uri = Uri.parse(baseUrl).replace(queryParameters: {
-      queryParam: promptText,
-    });
+    // Copy to clipboard first so user has it ready
+    controller.copyPrompt();
+
+    // Build URI with prompt as query parameter
+    final uri = Uri.parse(baseUrl).replace(
+      queryParameters: {queryParam: promptText},
+    );
 
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
       return;
     }
 
-    Get.snackbar(
-      'Unable to open',
-      'Please try again later.',
-      snackPosition: SnackPosition.BOTTOM,
+    // Fallback: open plain URL without query (some apps don't support deep-link params)
+    final fallbackUri = Uri.parse(baseUrl);
+    if (await canLaunchUrl(fallbackUri)) {
+      await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+      Get.snackbar(
+        'Prompt Copied!',
+        'Paste it in the chat to get started.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: _bgCardLight,
+        colorText: Colors.white,
+        icon: const Icon(Icons.content_paste, color: _teal),
+        duration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
+    Get.snackbar('Unable to open', 'Please try again later.',
+        snackPosition: SnackPosition.BOTTOM);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Typewriter Prompt Card — self-contained StatefulWidget
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _TypingPromptCard extends StatefulWidget {
+  final String promptText;
+  const _TypingPromptCard({required this.promptText});
+
+  @override
+  State<_TypingPromptCard> createState() => _TypingPromptCardState();
+}
+
+class _TypingPromptCardState extends State<_TypingPromptCard>
+    with SingleTickerProviderStateMixin {
+
+  static const Color _bgCard      = Color(0xFF13152B);
+  static const Color _bgCardLight = Color(0xFF1A1D35);
+  static const Color _purple      = Color(0xFFAA6EE8);
+  static const Color _teal        = Color(0xFF3EC6C6);
+  static const Color _purpleLight = Color(0xFFCC99FF);
+
+  String _displayed = '';
+  int _charIndex = 0;
+  Timer? _timer;
+  bool _cursorVisible = true;
+  Timer? _cursorTimer;
+  late AnimationController _containerAnim;
+  late Animation<double> _fadeAnim;
+  late Animation<Offset> _slideAnim;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Container entrance animation
+    _containerAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
     );
+    _fadeAnim = CurvedAnimation(parent: _containerAnim, curve: Curves.easeOut)
+    as Animation<double>;
+    _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _containerAnim, curve: Curves.easeOut),
+    );
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.15),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _containerAnim, curve: Curves.easeOutCubic));
+
+    // Start after short delay (image loads first)
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        _containerAnim.forward();
+        _startTyping();
+        _startCursorBlink();
+      }
+    });
   }
 
-  Widget _buildRelatedSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Related Generations',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            Text(
-              'View all',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[500],
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              final images = [
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuBqLHn0wfrmxGVUf3ifor5jDgTlNPL6A7BFy79K6YEhOSMv6rArcGsx2l1MLYRfctkW31Q0j6ydlJGQhyuZ_1DYE7EiPkAHNwf_Aa_bhEZXBTIOw1c--lnAsoVQ0S-xYTTXIxBXIDR3MTwwlzJ7WfWpCWiqQ-6JrS74rM748KEaMjUcInm8A8rKwbxjdryRaM1dOAhbYD10B-It3zbF1MtnGGDLhfUiUw07JVrhwTHbgJbq1G5DqzOJRaYv36p23aMMDaIT-QjKAinD',
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuC30d5lqcA7qGDIai5rlSITjKZdVmtztmePnGSXI1DFRGBc-KkM3QFS-25cHIQml0IYoznZtqhHryomG80RSKsJw_bsKBLEa8S-6CmNICHs95ZlOSWrVPu6Djvo5dbCtjyxUvcTKMNZB8pao8JPAGUHwy2aLibM3lQhenhpqw2us5juRewBomFvAlNm27DdXM6iJjiCYyskrgmt_Z8XVnN_g7CgWAK67zBMBr-Graf-hd4NG0qIpRAMB5mKV2uAaVoT-SrXHWIXVps-',
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuBnIwgECCsRsMij_rM2iWjEG8CCDNBAaI6FAPTjYQpoADhS0KSkCiPnvdjwZJSJVewSh3nxBLpyNKpbDBTBjGL3qp27r-Y6NFyMQaPuyQeR6K4mtdqO4vHwxVmBbOF1YZR7fuxCTRoKc6r4DNQZajZqz4HXLAkjHRm2JUlcM71wZB_m-JnKzkXA_TMhYmnCkZiZiNwNt3b0keDUF9MpWUplQ3JSDlahV3sdfb02wPm4TBnI6yPJLLCn9Sg74xoTG_UYqwZQOxRbR28a',
-                'https://lh3.googleusercontent.com/aida-public/AB6AXuB0AfTcB3io4NM4WQ9t2a9ZsxWhBbCnyYK2wrv7LaHiiImhTWtOVo4m7BqULtJYSnX_iWE0R4VZ_6yLkBRjJCaXeYvPbBx9We6l-yMpkhkyG-UnDcDJVVqyy-CjTMnEfHpqATc6beWi8dW9zVtyqX1y9vRu5HGCgwtBIRdV7rxDII_91lp6H2zesX31_-XpeCbQoEmmJHtRQRwo48r04XqlGTLZ-VFsRjUsrhYR0EPbk_RP5BhqX8TT91uszxAu8kWaN_C2fABRCGuj',
-              ];
+  void _startTyping() {
+    // Adaptive speed: shorter prompts type faster, longer ones slower
+    final charCount = widget.promptText.length;
+    final speed = charCount < 100 ? 35 : charCount < 300 ? 25 : 18;
 
-              return Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    imageUrl: images[index],
-                    width: 100,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: const Color(0xFF3a2d26),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: const Color(0xFF3a2d26),
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey[600],
+    _timer = Timer.periodic(Duration(milliseconds: speed), (t) {
+      if (!mounted) { t.cancel(); return; }
+      if (_charIndex < widget.promptText.length) {
+        setState(() {
+          _displayed = widget.promptText.substring(0, _charIndex + 1);
+          _charIndex++;
+        });
+      } else {
+        t.cancel();
+        // Stop cursor blinking after done
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted) {
+            _cursorTimer?.cancel();
+            setState(() => _cursorVisible = false);
+          }
+        });
+      }
+    });
+  }
+
+  void _startCursorBlink() {
+    _cursorTimer = Timer.periodic(const Duration(milliseconds: 530), (_) {
+      if (mounted) setState(() => _cursorVisible = !_cursorVisible);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _cursorTimer?.cancel();
+    _containerAnim.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDoneTyping = _charIndex >= widget.promptText.length;
+
+    return FadeTransition(
+      opacity: _fadeAnim,
+      child: SlideTransition(
+        position: _slideAnim,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [_bgCard, _bgCardLight],
+            ),
+            border: Border.all(color: _purple.withOpacity(0.22), width: 1),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: _purple.withOpacity(0.10),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row
+              Row(
+                children: [
+                  // Gradient indicator bar
+                  Container(
+                    width: 3, height: 16,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [_purple, _teal],
                       ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'PROMPT STRING',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      color: _purpleLight,
+                    ),
+                  ),
+                  const Spacer(),
+                  // Live typing indicator badge
+                  if (!isDoneTyping)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _purple.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: _purple.withOpacity(0.3), width: 1),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _PulsingDot(),
+                          const SizedBox(width: 5),
+                          const Text(
+                            'typing...',
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: _purpleLight,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                  // Done badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _teal.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: _teal.withOpacity(0.3), width: 1),
+                      ),
+                      child: const Text(
+                        '✓ ready',
+                        style: TextStyle(fontSize: 9, color: _teal, letterSpacing: 0.5),
+                      ),
+                    ),
+                ],
+              ),
+
+              const SizedBox(height: 14),
+
+              // Typing text with blinking cursor
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: _displayed,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.9),
+                        height: 1.65,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    // Blinking cursor
+                    WidgetSpan(
+                      child: AnimatedOpacity(
+                        opacity: _cursorVisible ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 100),
+                        child: Container(
+                          width: 2,
+                          height: 18,
+                          margin: const EdgeInsets.only(left: 2, bottom: 2),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [_purple, _teal],
+                            ),
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Progress bar while typing
+              if (!isDoneTyping) ...[
+                const SizedBox(height: 14),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: widget.promptText.isEmpty
+                        ? 0
+                        : _charIndex / widget.promptText.length,
+                    minHeight: 2,
+                    backgroundColor: _purple.withOpacity(0.12),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _purple.withOpacity(0.7),
                     ),
                   ),
                 ),
-              );
-            },
+              ],
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
+}
 
+// Small animated pulsing dot for "typing..." badge
+class _PulsingDot extends StatefulWidget {
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
 
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 800))
+      ..repeat(reverse: true);
+    _anim = Tween<double>(begin: 0.3, end: 1.0).animate(_ctrl);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _anim,
+      child: Container(
+        width: 6, height: 6,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color(0xFFAA6EE8),
+        ),
+      ),
+    );
+  }
 }

@@ -85,31 +85,31 @@ class FavoriteScreen extends GetView<HomeController> {
       ),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Get.back(),
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.15),
-                    Colors.white.withOpacity(0.08),
-                  ],
-                ),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.5,
-                ),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-          ),
+          // GestureDetector(
+          //   onTap: () => Get.back(),
+          //   child: Container(
+          //     width: 44,
+          //     height: 44,
+          //     decoration: BoxDecoration(
+          //       shape: BoxShape.circle,
+          //       gradient: LinearGradient(
+          //         colors: [
+          //           Colors.white.withOpacity(0.15),
+          //           Colors.white.withOpacity(0.08),
+          //         ],
+          //       ),
+          //       border: Border.all(
+          //         color: Colors.white.withOpacity(0.2),
+          //         width: 1.5,
+          //       ),
+          //     ),
+          //     child: const Icon(
+          //       Icons.arrow_back_ios_new_rounded,
+          //       color: Colors.white,
+          //       size: 18,
+          //     ),
+          //   ),
+          // ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
