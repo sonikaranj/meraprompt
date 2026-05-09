@@ -217,9 +217,10 @@ class HomeScreen extends GetView<HomeController> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            const Color(0xFF1a0f0a),
-            const Color(0xFF0f0a05),
-            darkBg,
+            const Color(0xFF0B1020),
+            const Color(0xFF14142B).withValues(alpha: 0.95),
+            const Color(0xFF0B1020),
+
           ],
         ),
       ),
