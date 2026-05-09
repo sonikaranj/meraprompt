@@ -112,7 +112,7 @@ class HomeScreen extends GetView<HomeController> {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFec5b13),
+                          backgroundColor: const Color(0xFF9B59B6),
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
@@ -189,10 +189,10 @@ class HomeScreen extends GetView<HomeController> {
                   children: [
                     ShaderMask(
                       shaderCallback: (bounds) => LinearGradient(
-                        colors: const [Color(0xFFec5b13), Color(0xFFa855f7)],
+                        colors: const [Color(0xFF9B59B6), Color(0xFF00BCD4)],
                       ).createShader(bounds),
                       child: Text(
-                        'PromptSeen',
+                        'PromptMera',
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -369,7 +369,7 @@ class HomeScreen extends GetView<HomeController> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   color: isSelected
-                      ? const Color(0xFFec5b13)
+                      ? const Color(0xFF9B59B6)
                       : Colors.white.withOpacity(0.05),
                   border: Border.all(
                     color: isSelected
@@ -380,7 +380,7 @@ class HomeScreen extends GetView<HomeController> {
                   boxShadow: isSelected
                       ? [
                     BoxShadow(
-                      color: const Color(0xFFec5b13).withOpacity(0.5),
+                      color: const Color(0xFF9B59B6).withOpacity(0.5),
                       blurRadius: 12,
                       spreadRadius: 0,
                     ),
@@ -434,8 +434,8 @@ class HomeScreen extends GetView<HomeController> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFec5b13).withOpacity(0.2),
-            const Color(0xFFa855f7).withOpacity(0.18),
+            const Color(0xFF9B59B6).withOpacity(0.2),
+            const Color(0xFF00BCD4).withOpacity(0.18),
             Colors.white.withOpacity(0.05),
           ],
         ),
@@ -445,7 +445,7 @@ class HomeScreen extends GetView<HomeController> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFec5b13).withOpacity(0.2),
+            color: const Color(0xFF9B59B6).withOpacity(0.2),
             blurRadius: 18,
             offset: const Offset(0, 10),
           ),
@@ -598,7 +598,7 @@ class HomeScreen extends GetView<HomeController> {
             children: [
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Color(0xFFec5b13),
+                  Color(0xFF9B59B6),
                 ),
               ),
               const SizedBox(height: 16),
@@ -671,14 +671,14 @@ class HomeScreen extends GetView<HomeController> {
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: isFav
-                ? const Color(0xFFec5b13).withOpacity(0.45)
+                ? const Color(0xFF9B59B6).withOpacity(0.45)
                 : Colors.white.withOpacity(0.12),
             width: 1.4,
           ),
           boxShadow: [
             BoxShadow(
               color: isFav
-                  ? const Color(0xFFec5b13).withOpacity(0.25)
+                  ? const Color(0xFF9B59B6).withOpacity(0.25)
                   : Colors.black.withOpacity(0.22),
               blurRadius: isFav ? 18 : 12,
               spreadRadius: isFav ? 1 : 0,
@@ -745,18 +745,18 @@ class HomeScreen extends GetView<HomeController> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isFav
-                          ? const Color(0xFFec5b13).withOpacity(0.9)
+                          ? const Color(0xFF9B59B6).withOpacity(0.9)
                           : Colors.white.withOpacity(0.08),
                       border: Border.all(
                         color: isFav
-                            ? const Color(0xFFec5b13)
+                            ? const Color(0xFF9B59B6)
                             : Colors.white.withOpacity(0.15),
                         width: 1.5,
                       ),
                       boxShadow: isFav
                           ? [
                         BoxShadow(
-                          color: const Color(0xFFec5b13)
+                          color: const Color(0xFF9B59B6)
                               .withOpacity(0.4),
                           blurRadius: 10,
                           spreadRadius: 2,

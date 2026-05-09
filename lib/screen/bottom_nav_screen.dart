@@ -25,17 +25,17 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     NavItem(
       icon: Icons.home,
       label: "Home",
-      color: const Color(0xFFec5b13),
+      color: const Color(0xFF00D4FF), // Cyan
     ),
     NavItem(
       icon: Icons.favorite,
       label: "Favorite",
-      color: const Color(0xFFec5b13),
+      color: const Color(0xFF00D4FF), // Cyan
     ),
     NavItem(
       icon: Icons.person,
       label: "Profile",
-      color: const Color(0xFFec5b13),
+      color: const Color(0xFF00D4FF), // Cyan
     ),
   ];
 
@@ -57,7 +57,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     return GetBuilder<BottomNavController>(
       builder: (controller) {
         return Scaffold(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color(0xFF0A0E27), // Dark navy background
           body: IndexedStack(
             index: controller.currentIndex,
             children: pages,
@@ -73,13 +73,20 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
       builder: (controller) {
         return Container(
           decoration: BoxDecoration(
-            color: Colors.black,
+            color: const Color(0xFF0F1428), // Darker navy background
             border: Border(
               top: BorderSide(
-                color: Colors.black!,
+                color: const Color(0xFF1a1f3a),
                 width: 1,
               ),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00D4FF).withOpacity(0.1),
+                blurRadius: 20,
+                spreadRadius: 0,
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -115,7 +122,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               children: [
                 Icon(
                   item.icon,
-                  color: isActive ? item.color : Colors.grey[400],
+                  color: isActive ? item.color : const Color(0xFF6B7280),
                   size: 24,
                 ),
                 const SizedBox(height: 4),
@@ -123,7 +130,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
                   item.label,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isActive ? item.color : Colors.grey[400],
+                    color: isActive ? item.color : const Color(0xFF6B7280),
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),

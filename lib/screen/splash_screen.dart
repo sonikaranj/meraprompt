@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:ui' as ui;
 
 // Splash Screen Controller
 class SplashController extends GetxController {
   final progress = 0.0.obs;
-  final statusText = 'Initializing Neural Engine'.obs;
-  final subStatusText = 'Optimizing Models'.obs;
+  final statusText = 'INITIALIZING NEURAL CORE'.obs;
 
   @override
   void onInit() {
@@ -19,24 +19,12 @@ class SplashController extends GetxController {
     for (int i = 0; i <= 100; i += 2) {
       progress.value = i / 100;
 
-      // Update status text based on progress
-      if (i == 20) {
-        statusText.value = 'Loading AI Models';
-        subStatusText.value = 'Training Algorithms';
-      } else if (i == 50) {
-        statusText.value = 'Calibrating Neural Network';
-        subStatusText.value = 'Fine-tuning Parameters';
-      } else if (i == 75) {
-        statusText.value = 'Finalizing Setup';
-        subStatusText.value = 'Preparing Interface';
-      }
-
       await Future.delayed(const Duration(milliseconds: 40));
     }
 
     // Navigate to home after splash completes
     await Future.delayed(const Duration(milliseconds: 500));
-    Get.offNamed('/onboarding'); // Change '/home' to your home route
+    Get.offNamed('/onboarding');
   }
 }
 
@@ -51,321 +39,266 @@ class SplashScreen extends GetView<SplashController> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          color: Color(0xFF0a0604), // background-dark
+          color: Color(0xFF0D0F1A),
         ),
         child: Stack(
           children: [
-            // Background Decorative Elements
-            // AI Mesh Pattern
+            // Background Glow - Radial gradient
             Positioned.fill(
-              child: Opacity(
-                opacity: 0.4,
-                child: CustomPaint(
-                  painter: MeshPatternPainter(),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(0.5, 0.5),
+                    radius: 1.2,
+                    colors: [
+                      const Color(0xFF6750A4).withValues(alpha: 0.15),
+                      const Color(0xFF0D0F1A).withValues(alpha: 1.0),
+                    ],
+                    stops: const [0.0, 0.7],
+                  ),
                 ),
               ),
             ),
 
-            // Glow Background 1 (Top-Left)
+            // Grid Pattern Background
+            Positioned.fill(
+              child: CustomPaint(
+                painter: GridPatternPainter(),
+              ),
+            ),
+
+            // Decorative AI Blob 1 - Top Left
             Positioned(
-              top: -80,
-              left: -80,
+              top: -100,
+              left: -100,
               child: Container(
-                width: 260,
-                height: 260,
+                width: 400,
+                height: 400,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFec5b13).withOpacity(0.2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFec5b13).withOpacity(0.15),
-                      blurRadius: 80,
-                      spreadRadius: 10,
-                    ),
-                  ],
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFFCFBCFF).withValues(alpha: 0.10),
+                      const Color(0xFF0D0F1A).withValues(alpha: 0.0),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-
-            // Glow Background 2 (Center)
-            Positioned(
-              top: MediaQuery.of(context).size.height / 2 - 160,
-              left: MediaQuery.of(context).size.width / 2 - 160,
-              child: Container(
-                width: 320,
-                height: 320,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFec5b13).withOpacity(0.1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFec5b13).withOpacity(0.1),
-                      blurRadius: 100,
-                      spreadRadius: 15,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Main Content
-            SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Top Spacer
-                  const SizedBox(height: 20),
-
-                  // Center Content
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Logo with Glow Effect
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Background Glow
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color(0xFFec5b13).withOpacity(0.3),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFFec5b13).withOpacity(0.3),
-                                    blurRadius: 80,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Logo Container
-                            Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    const Color(0xFFec5b13),
-                                    const Color(0xFFec5b13).withOpacity(0.8),
-                                    const Color(0xFFec5b13).withOpacity(0.4),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFFec5b13).withOpacity(0.4),
-                                    blurRadius: 20,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.auto_awesome,
-                                color: Colors.white,
-                                size: 60,
-                              ),
-                            ),
-                            // Sparkle Accent (Top-Right)
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Icon(
-                                Icons.bubble_chart,
-                                color: const Color(0xFFec5b13).withOpacity(0.6),
-                                size: 20,
-                              ),
-                            ),
-                            // Blur Accent (Bottom-Left)
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              child: Icon(
-                                Icons.blur_on,
-                                color: const Color(0xFFec5b13).withOpacity(0.4),
-                                size: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-
-                        // App Name - PromptSeen
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Prompt',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: -0.5,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                              TextSpan(
-                                text: 'Seen',
-                                style: const TextStyle(
-                                  color: Color(0xFFec5b13),
-                                  fontSize: 48,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: -0.5,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Subtitle
-                        Text(
-                          'Discover Powerful AI Photo Prompts',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ],
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 120, sigmaY: 120),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
                     ),
                   ),
+                ),
+              ),
+            ),
 
-                  // Bottom: Loading State
-                  Padding(
-                    padding: const EdgeInsets.all(40),
-                    child: Column(
-                      children: [
-                        // Status Text and Progress Percentage
-                        Obx(() => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            // Decorative AI Blob 2 - Bottom Right
+            Positioned(
+              bottom: -150,
+              right: -150,
+              child: Container(
+                width: 500,
+                height: 500,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFFE7C365).withValues(alpha: 0.05),
+                      const Color(0xFF0D0F1A).withValues(alpha: 0.0),
+                    ],
+                  ),
+                ),
+                child: BackdropFilter(
+                  filter: ui.ImageFilter.blur(sigmaX: 150, sigmaY: 150),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // Particles Effect
+            Positioned.fill(
+              child: CustomPaint(
+                painter: ParticlesPainter(),
+              ),
+            ),
+
+            // Center Content
+            SafeArea(
+              child: Column(
+                children: [
+                  const Spacer(flex: 2),
+
+                  // Logo Section
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Logo Container with Glow
+                      Container(
+                        width: 240,
+                        height: 240,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: RadialGradient(
+                            colors: [
+                              const Color(0xFFCFBCFF).withValues(alpha: 0.20),
+                              const Color(0xFF0D0F1A).withValues(alpha: 0.0),
+                            ],
+                            stops: const [0.0, 1.0],
+                          ),
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Image.network(
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCSuZ_6gQI96_AOjdTsZ4EgwtfjI5NN_pyjS-m8-WqhX_dnZ_B1OPALSpcCU1nEMw_UuK3N-8lSJA2Yvw2ZVlZUxF2EwVQMCDVnjj6ftLukehfw__R5jJu5pGj5Fm5VWFmOCuxvc6YAl6yejel3yipGTLRTyl659D4dEnUTjSVDHbo9fbqgr4h8yPT8ujMq6VYNSzzWE6BjzUTm0qn3JkfFefPRZFxI90F5wCsBpXj_RcT5orjpLnyS9374ZrqAjTtp1D3c0W2Ukj-b',
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // App Name
+                      ShaderMask(
+                        shaderCallback: (bounds) {
+                          return const LinearGradient(
+                            colors: [
+                              Color(0xFFCFBCFF), // primary
+                              Color(0xFFCDC0E9), // secondary
+                              Color(0xFFE7C365), // tertiary
+                            ],
+                            stops: [0.0, 0.5, 1.0],
+                          ).createShader(bounds);
+                        },
+                        child: Text(
+                          'PromptMera',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 48,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -1.0,
+                            fontFamily: 'Outfit',
+                            height: 1.2,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Subtitle
+                      const Text(
+                        'Smart AI Prompts for Unlimited Creativity',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF9CA3AF),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0.3,
+                          fontFamily: 'PlusJakartaSans',
+                        ),
+                      ),
+
+                      const SizedBox(height: 50),
+
+                      // Progress Bar Container
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 60),
+                        child: Obx(() => Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      controller.statusText.value,
-                                      style: const TextStyle(
-                                        color: Color(0xFFe2e8f0),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        letterSpacing: 0.5,
-                                        fontFamily: 'Inter',
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      controller.subStatusText.value,
-                                      style: TextStyle(
-                                        color: const Color(0xFFec5b13).withOpacity(0.6),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.5,
-                                        fontFamily: 'Inter',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '${(controller.progress.value * 100).toStringAsFixed(0)}%',
-                                  style: const TextStyle(
-                                    color: Color(0xFFec5b13),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Inter',
-                                  ),
+                            // Progress Bar
+                            Container(
+                              width: double.infinity,
+                              height: 2,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF374151),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                              child: Stack(
+                                children: [
+                                  // Animated gradient fill with pulse effect
+                                  Container(
+                                    width: (MediaQuery.of(context).size.width - 120) *
+                                        controller.progress.value,
+                                    height: 2,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  const Color(0xFF8B5CF6).withValues(alpha: 0.0),
+                                  const Color(0xFF8B5CF6),
+                                  const Color(0xFF3B82F6),
+                                  const Color(0xFF3B82F6).withValues(alpha: 0.0),
+                                ],
+                                stops: const [0.0, 0.3, 0.7, 1.0],
+                              ),
+                              borderRadius: BorderRadius.circular(2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.6),
+                                  blurRadius: 12,
+                                  spreadRadius: 2,
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
-                            // Progress Bar
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                children: [
-                                  // Background bar
-                                  Container(
-                                    width: double.infinity,
-                                    height: 6,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF1e293b),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  // Progress fill with glow
-                                  Container(
-                                    width: Get.width * controller.progress.value,
-                                    height: 6,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          const Color(0xFFec5b13),
-                                          const Color(0xFFec5b13).withOpacity(0.6),
-                                        ],
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: const Color(0xFFec5b13).withOpacity(0.4),
-                                          blurRadius: 8,
-                                          spreadRadius: 1,
-                                        ),
-                                      ],
-                                    ),
                                   ),
                                 ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Status Text - Static
+                            Text(
+                              controller.statusText.value,
+                              style: TextStyle(
+                                color: const Color(0xFF9CA3AF).withValues(alpha: 0.4),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 2.5,
+                                fontFamily: 'PlusJakartaSans',
                               ),
                             ),
                           ],
                         )),
-                        const SizedBox(height: 16),
+                      ),
+                    ],
+                  ),
 
-                        // Premium AI Access Badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFec5b13).withOpacity(0.1),
-                            border: Border.all(
-                              color: const Color(0xFFec5b13).withOpacity(0.2),
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.security,
-                                color: Color(0xFFec5b13),
-                                size: 14,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Premium AI Access',
-                                style: TextStyle(
-                                  color: const Color(0xFFec5b13).withOpacity(0.8),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.8,
-                                  fontFamily: 'Inter',
-                                ),
-                              ),
-                            ],
+                  const Spacer(flex: 2),
+
+                  // Bottom Section - Powered By
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.psychology_outlined,
+                          color: const Color(0xFF6B7280).withValues(alpha: 0.8),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'POWERED BY ADVANCED GENERATIVE MODELS',
+                          style: TextStyle(
+                            color: const Color(0xFF6B7280).withValues(alpha: 0.7),
+                            fontSize: 9,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.5,
+                            fontFamily: 'PlusJakartaSans',
                           ),
                         ),
                       ],
@@ -381,22 +314,56 @@ class SplashScreen extends GetView<SplashController> {
   }
 }
 
-// Custom Mesh Pattern Painter
-class MeshPatternPainter extends CustomPainter {
+// Grid Pattern Painter
+class GridPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFec5b13).withOpacity(0.05)
-      ..strokeWidth = 1;
+      ..color = const Color(0xFF374151).withValues(alpha: 0.15)
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
 
-    const cellSize = 24.0;
-    const radius = 1.0;
+    const cellSize = 100.0;
 
+    // Vertical lines
     for (double x = 0; x < size.width; x += cellSize) {
-      for (double y = 0; y < size.height; y += cellSize) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x, size.height),
+        paint,
+      );
+    }
+
+    // Horizontal lines
+    for (double y = 0; y < size.height; y += cellSize) {
+      canvas.drawLine(
+        Offset(0, y),
+        Offset(size.width, y),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(GridPatternPainter oldDelegate) => false;
+}
+
+// Particles Painter
+class ParticlesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFFCFBCFF).withValues(alpha: 0.1)
+      ..style = PaintingStyle.fill;
+
+    const particleSize = 40.0;
+
+    // Draw particles as dots in a grid pattern
+    for (double x = 0; x < size.width; x += particleSize) {
+      for (double y = 0; y < size.height; y += particleSize) {
         canvas.drawCircle(
-          Offset(x + 2, y + 2),
-          radius,
+          Offset(x, y),
+          1.0,
           paint,
         );
       }
@@ -404,5 +371,8 @@ class MeshPatternPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(MeshPatternPainter oldDelegate) => false;
+  bool shouldRepaint(ParticlesPainter oldDelegate) => false;
 }
+
+// Custom Brain Painter (Left Side) - REMOVED, using image instead
+// Custom Arrow Painter (Right Side) - REMOVED, using image instead
