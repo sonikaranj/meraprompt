@@ -93,10 +93,10 @@ class OnboardingScreen extends GetView<OnboardingController> {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF3CF2FF).withOpacity(0.04),
+                  color: const Color(0xFF3CF2FF).withValues(alpha: 0.04),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF3CF2FF).withOpacity(0.08),
+                      color: const Color(0xFF3CF2FF).withValues(alpha: 0.08),
                       blurRadius: 100,
                       spreadRadius: 30,
                     ),
@@ -166,21 +166,21 @@ class OnboardingScreen extends GetView<OnboardingController> {
                               margin: EdgeInsets.symmetric(horizontal: 4.w),
                               width: controller.currentPage.value == index ? 24.w : 8.w,
                               height: 4.h,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(2.r),
-                                color: controller.currentPage.value == index
-                                    ? const Color(0xFF3CF2FF)
-                                    : const Color(0xFFB05CFF).withOpacity(0.3),
-                                boxShadow: controller.currentPage.value == index
-                                    ? [
-                                  BoxShadow(
-                                    color: const Color(0xFF3CF2FF).withOpacity(0.8),
-                                    blurRadius: 12,
-                                    spreadRadius: 2,
-                                  ),
-                                ]
-                                    : [],
-                              ),
+                               decoration: BoxDecoration(
+                                 borderRadius: BorderRadius.circular(2.r),
+                                 color: controller.currentPage.value == index
+                                     ? const Color(0xFF3CF2FF)
+                                     : const Color(0xFFB05CFF).withValues(alpha: 0.3),
+                                 boxShadow: controller.currentPage.value == index
+                                     ? [
+                                   BoxShadow(
+                                     color: const Color(0xFF3CF2FF).withValues(alpha: 0.8),
+                                     blurRadius: 12,
+                                     spreadRadius: 2,
+                                   ),
+                                 ]
+                                     : [],
+                               ),
                             ),
                           ),
                         )),
@@ -202,20 +202,20 @@ class OnboardingScreen extends GetView<OnboardingController> {
                                   Color(0xFF3CF2FF),
                                 ],
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFB05CFF).withOpacity(0.5),
-                                  blurRadius: 24,
-                                  spreadRadius: 3,
-                                  offset: const Offset(0, 0),
-                                ),
-                                BoxShadow(
-                                  color: const Color(0xFF3CF2FF).withOpacity(0.3),
-                                  blurRadius: 16,
-                                  spreadRadius: 2,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
+                               boxShadow: [
+                                 BoxShadow(
+                                   color: const Color(0xFFB05CFF).withValues(alpha: 0.5),
+                                   blurRadius: 24,
+                                   spreadRadius: 3,
+                                   offset: const Offset(0, 0),
+                                 ),
+                                 BoxShadow(
+                                   color: const Color(0xFF3CF2FF).withValues(alpha: 0.3),
+                                   blurRadius: 16,
+                                   spreadRadius: 2,
+                                   offset: const Offset(0, 0),
+                                 ),
+                               ],
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -585,7 +585,7 @@ class OnboardingPageWidget extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF3CF2FF).withOpacity(0.1),
+                            const Color(0xFF3CF2FF).withValues(alpha: 0.1),
                             const Color(0xFF0B1020),
                           ],
                         ),
@@ -593,7 +593,7 @@ class OnboardingPageWidget extends StatelessWidget {
                       child: Icon(
                         Icons.image_not_supported,
                         size: 40.sp,
-                        color: const Color(0xFF3CF2FF).withOpacity(0.5),
+                        color: const Color(0xFF3CF2FF).withValues(alpha: 0.5),
                       ),
                     );
                   },
@@ -605,7 +605,7 @@ class OnboardingPageWidget extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF3CF2FF).withOpacity(0.1),
+                            const Color(0xFF3CF2FF).withValues(alpha: 0.1),
                             const Color(0xFF0B1020),
                           ],
                         ),
@@ -636,7 +636,7 @@ class OnboardingPageWidget extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.6),
+                          Colors.black.withValues(alpha: 0.6),
                         ],
                       ),
                     ),
@@ -700,7 +700,7 @@ class OnboardingPageWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: const Color(0xFF3CF2FF).withOpacity(0.2),
+          color: const Color(0xFF3CF2FF).withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -715,49 +715,49 @@ class OnboardingPageWidget extends StatelessWidget {
               fit: BoxFit.cover,
               width: double.infinity,
               height: 160.h,
-               errorBuilder: (context, error, stackTrace) {
-                 return Container(
-                   decoration: BoxDecoration(
-                     gradient: LinearGradient(
-                       begin: Alignment.topLeft,
-                       end: Alignment.bottomRight,
-                       colors: [
-                         const Color(0xFF3CF2FF).withOpacity(0.1),
-                         const Color(0xFF0B1020),
-                       ],
-                     ),
-                   ),
-                   child: Icon(
-                     Icons.image_outlined,
-                     size: 40.sp,
-                     color: const Color(0xFF3CF2FF).withOpacity(0.5),
-                   ),
-                 );
-               },
-               loadingBuilder: (context, child, loadingProgress) {
-                 if (loadingProgress == null) return child;
-                 return Container(
-                   decoration: BoxDecoration(
-                     gradient: LinearGradient(
-                       begin: Alignment.topLeft,
-                       end: Alignment.bottomRight,
-                       colors: [
-                         const Color(0xFF3CF2FF).withOpacity(0.1),
-                         const Color(0xFF0B1020),
-                       ],
-                     ),
-                   ),
-                   child: Center(
-                     child: CircularProgressIndicator(
-                       color: const Color(0xFF3CF2FF),
-                       value: loadingProgress.expectedTotalBytes != null
-                           ? loadingProgress.cumulativeBytesLoaded /
-                           loadingProgress.expectedTotalBytes!
-                           : null,
-                     ),
-                   ),
-                 );
-               },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF3CF2FF).withValues(alpha: 0.1),
+                        const Color(0xFF0B1020),
+                      ],
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.image_outlined,
+                    size: 40.sp,
+                    color: const Color(0xFF3CF2FF).withValues(alpha: 0.5),
+                  ),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF3CF2FF).withValues(alpha: 0.1),
+                        const Color(0xFF0B1020),
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: const Color(0xFF3CF2FF),
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  ),
+                );
+              },
             ),
 
             // Overlay gradient
@@ -773,7 +773,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.6),
+                      Colors.black.withValues(alpha: 0.6),
                     ],
                   ),
                 ),
@@ -832,22 +832,22 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF3CF2FF).withOpacity(0.08),
-            const Color(0xFFB05CFF).withOpacity(0.04),
+            const Color(0xFF3CF2FF).withValues(alpha: 0.08),
+            const Color(0xFFB05CFF).withValues(alpha: 0.04),
           ],
         ),
         border: Border.all(
-          color: const Color(0xFF3CF2FF).withOpacity(0.2),
+          color: const Color(0xFF3CF2FF).withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3CF2FF).withOpacity(0.1),
+            color: const Color(0xFF3CF2FF).withValues(alpha: 0.1),
             blurRadius: 12,
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: const Color(0xFFB05CFF).withOpacity(0.05),
+            color: const Color(0xFFB05CFF).withValues(alpha: 0.05),
             blurRadius: 8,
             spreadRadius: 1,
           ),
@@ -870,7 +870,7 @@ class OnboardingPageWidget extends StatelessWidget {
                   color: const Color(0xFF0B1020),
                   child: Icon(
                     Icons.image_not_supported,
-                    color: const Color(0xFF3CF2FF).withOpacity(0.5),
+                    color: const Color(0xFF3CF2FF).withValues(alpha: 0.5),
                     size: 30.sp,
                   ),
                 );
@@ -895,7 +895,7 @@ class OnboardingPageWidget extends StatelessWidget {
               color: const Color(0xFF0B1020),
               child: Icon(
                 Icons.image_outlined,
-                color: const Color(0xFFec5b13).withOpacity(0.5),
+                color: const Color(0xFFec5b13).withValues(alpha: 0.5),
                 size: 30.sp,
               ),
             ),
@@ -913,7 +913,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.4),
+                      Colors.black.withValues(alpha: 0.4),
                     ],
                   ),
                 ),
@@ -932,7 +932,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     width: 40.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(2.r),
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -941,7 +941,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     width: 30.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(1.r),
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha: 0.4),
                     ),
                   ),
                 ],
@@ -953,95 +953,15 @@ class OnboardingPageWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildGlassCard({required double width, required double height}) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFFec5b13).withOpacity(0.08),
-            const Color(0xFFec5b13).withOpacity(0.02),
-          ],
-        ),
-        border: Border.all(
-          color: const Color(0xFFec5b13).withOpacity(0.2),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 12,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Placeholder content
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.r),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFFec5b13).withOpacity(0.1),
-                  const Color(0xFF1a110d),
-                ],
-              ),
-            ),
-            margin: EdgeInsets.all(4.w),
-          ),
-
-          // Skeleton lines
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 3.h,
-                width: 40.w,
-                margin: EdgeInsets.only(
-                  left: 8.w,
-                  bottom: 6.h,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2.r),
-                  color: const Color(0xFFec5b13).withOpacity(0.4),
-                ),
-              ),
-              Container(
-                height: 2.h,
-                width: 30.w,
-                margin: EdgeInsets.only(
-                  left: 8.w,
-                  bottom: 8.h,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(1.r),
-                  color: const Color(0xFFec5b13).withOpacity(0.2),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildStyleBadge(String text) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6.r),
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 1,
         ),
         // backdropFilter: const BoxFilter(),
@@ -1064,14 +984,14 @@ class OnboardingPageWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: const Color(0xFFec5b13).withOpacity(0.3),
+          color: const Color(0xFFec5b13).withValues(alpha: 0.3),
           width: 1,
         ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFec5b13).withOpacity(0.1),
+            const Color(0xFFec5b13).withValues(alpha: 0.1),
             const Color(0xFF1a110d),
           ],
         ),
@@ -1082,7 +1002,7 @@ class OnboardingPageWidget extends StatelessWidget {
           Icon(
             Icons.image_outlined,
             size: 40.sp,
-            color: const Color(0xFFec5b13).withOpacity(0.5),
+            color: const Color(0xFFec5b13).withValues(alpha: 0.5),
           ),
           Positioned(
             bottom: 8.h,
