@@ -13,53 +13,92 @@ class OnboardingScreen extends GetView<OnboardingController> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: const Color(0xFF221610),
+          color: const Color(0xFF0B1020),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF221610),
-              const Color(0xFF2a1f1a).withOpacity(0.8),
-              const Color(0xFF221610),
+              const Color(0xFF0B1020),
+              const Color(0xFF14142B).withValues(alpha: 0.95),
+              const Color(0xFF0B1020),
             ],
           ),
         ),
         child: Stack(
           children: [
-            // Background glow effects
+            // Gradient overlay for immersive atmosphere
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 1.5,
+                    colors: [
+                      const Color(0xFF1a1a3e).withValues(alpha: 0.3),
+                      const Color(0xFF0B1020).withValues(alpha: 0.1),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Cyan glow effect (top-left)
             Positioned(
-              top: -100,
+              top: -150,
+              left: -150,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF3CF2FF).withValues(alpha: 0.08),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF3CF2FF).withValues(alpha: 0.15),
+                      blurRadius: 150,
+                      spreadRadius: 40,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Purple glow effect (bottom-right)
+            Positioned(
+              bottom: -150,
+              right: -150,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFB05CFF).withValues(alpha: 0.06),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFB05CFF).withValues(alpha: 0.12),
+                      blurRadius: 150,
+                      spreadRadius: 40,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Secondary Cyan accent (bottom-left)
+            Positioned(
+              bottom: -100,
               left: -100,
               child: Container(
                 width: 300,
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFec5b13).withOpacity(0.1),
+                  color: const Color(0xFF3CF2FF).withOpacity(0.04),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFec5b13).withOpacity(0.1),
+                      color: const Color(0xFF3CF2FF).withOpacity(0.08),
                       blurRadius: 100,
-                      spreadRadius: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -100,
-              right: -100,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFFec5b13).withOpacity(0.05),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFec5b13).withOpacity(0.05),
-                      blurRadius: 100,
-                      spreadRadius: 20,
+                      spreadRadius: 30,
                     ),
                   ],
                 ),
@@ -81,10 +120,10 @@ class OnboardingScreen extends GetView<OnboardingController> {
                           child: Text(
                             'Skip',
                             style: TextStyle(
-                              color: const Color(0xFFec5b13),
+                              color: const Color(0xFF3CF2FF),
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
+                              letterSpacing: 1.2,
                             ),
                           ),
                         ),
@@ -130,13 +169,13 @@ class OnboardingScreen extends GetView<OnboardingController> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(2.r),
                                 color: controller.currentPage.value == index
-                                    ? const Color(0xFFec5b13)
-                                    : const Color(0xFFec5b13).withOpacity(0.3),
+                                    ? const Color(0xFF3CF2FF)
+                                    : const Color(0xFFB05CFF).withOpacity(0.3),
                                 boxShadow: controller.currentPage.value == index
                                     ? [
                                   BoxShadow(
-                                    color: const Color(0xFFec5b13).withOpacity(0.6),
-                                    blurRadius: 8,
+                                    color: const Color(0xFF3CF2FF).withOpacity(0.8),
+                                    blurRadius: 12,
                                     spreadRadius: 2,
                                   ),
                                 ]
@@ -154,20 +193,27 @@ class OnboardingScreen extends GetView<OnboardingController> {
                             width: double.infinity,
                             height: 56.h,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.r),
+                              borderRadius: BorderRadius.circular(28.r),
                               gradient: const LinearGradient(
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                                 colors: [
-                                  Color(0xFFec5b13),
-                                  Color(0xFFff8c52),
+                                  Color(0xFFB05CFF),
+                                  Color(0xFF3CF2FF),
                                 ],
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFec5b13).withOpacity(0.4),
-                                  blurRadius: 20,
+                                  color: const Color(0xFFB05CFF).withOpacity(0.5),
+                                  blurRadius: 24,
+                                  spreadRadius: 3,
+                                  offset: const Offset(0, 0),
+                                ),
+                                BoxShadow(
+                                  color: const Color(0xFF3CF2FF).withOpacity(0.3),
+                                  blurRadius: 16,
                                   spreadRadius: 2,
+                                  offset: const Offset(0, 0),
                                 ),
                               ],
                             ),
@@ -183,7 +229,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
                                     color: Colors.white,
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
+                                    letterSpacing: 0.8,
                                   ),
                                 )),
                                 SizedBox(width: 8.w),
@@ -264,7 +310,7 @@ class OnboardingPageWidget extends StatelessWidget {
                       TextSpan(
                         text: page.titleHighlight,
                         style: TextStyle(
-                          color: const Color(0xFFec5b13),
+                          color: const Color(0xFF3CF2FF),
                           fontSize: 32.sp,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
@@ -374,126 +420,135 @@ class OnboardingPageWidget extends StatelessWidget {
   // Page 2: Single large card with overlay
   Widget _buildPage2Layout() {
     return Center(
-      child: Container(
-        width: 240.w,
-        height: 320.h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: const Color(0xFFec5b13).withOpacity(0.3),
-            width: 1.5,
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFFec5b13).withOpacity(0.1),
-              const Color(0xFF221610),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.r),
+        child: Container(
+          width: 240.w,
+          height: 320.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: const Color(0xFF3CF2FF).withValues(alpha: 0.2),
+              width: 1.5,
+            ),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF3CF2FF).withValues(alpha: 0.08),
+                const Color(0xFF0B1020).withValues(alpha: 0.5),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF3CF2FF).withValues(alpha: 0.15),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: const Color(0xFFB05CFF).withValues(alpha: 0.08),
+                blurRadius: 15,
+                spreadRadius: 1,
+              ),
             ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFec5b13).withOpacity(0.2),
-              blurRadius: 20,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // Image from URL
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16.r),
-              child: Image.network(
-               '${page.images[0]}',
-                fit: BoxFit.cover,
-                width: 240.w,
-                height: 320.h,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFFec5b13).withOpacity(0.15),
-                          const Color(0xFF1a110d),
-                        ],
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Image from URL
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.r),
+                child: Image.network(
+                  '${page.images[0]}',
+                  fit: BoxFit.cover,
+                  width: 240.w,
+                  height: 320.h,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            const Color(0xFF3CF2FF).withValues(alpha: 0.1),
+                            const Color(0xFF0B1020),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: 60.sp,
-                      color: const Color(0xFFec5b13).withOpacity(0.5),
-                    ),
-                  );
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFFec5b13).withOpacity(0.15),
-                          const Color(0xFF1a110d),
-                        ],
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 60.sp,
+                        color: const Color(0xFF3CF2FF).withValues(alpha: 0.5),
                       ),
-                    ),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: const Color(0xFFec5b13),
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                            : null,
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            const Color(0xFF3CF2FF).withValues(alpha: 0.1),
+                            const Color(0xFF0B1020),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: const Color(0xFF3CF2FF),
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
 
-            // Overlay gradient
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 120.h,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.r),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.6),
-                    ],
+              // Overlay gradient
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 120.h,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.r),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.6),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            // Style badges
-            Positioned(
-              top: 12.h,
-              left: 12.w,
-              child: _buildStyleBadge('Cinematic'),
-            ),
-            Positioned(
-              bottom: 12.h,
-              right: 12.w,
-              child: _buildStyleBadge('Anime v3'),
-            ),
-          ],
+              // Style badges
+              Positioned(
+                top: 12.h,
+                left: 12.w,
+                child: _buildStyleBadge('Cinematic'),
+              ),
+              Positioned(
+                bottom: 12.h,
+                right: 12.w,
+                child: _buildStyleBadge('Anime v3'),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
   }
 
   // Page 3: Grid layout with transformation
@@ -508,7 +563,7 @@ class OnboardingPageWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.r),
             border: Border.all(
-              color: const Color(0xFFec5b13).withOpacity(0.3),
+              color: const Color(0xFF3CF2FF).withValues(alpha: 0.2),
               width: 1,
             ),
           ),
@@ -530,15 +585,15 @@ class OnboardingPageWidget extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFFec5b13).withOpacity(0.1),
-                            const Color(0xFF1a110d),
+                            const Color(0xFF3CF2FF).withOpacity(0.1),
+                            const Color(0xFF0B1020),
                           ],
                         ),
                       ),
                       child: Icon(
                         Icons.image_not_supported,
                         size: 40.sp,
-                        color: const Color(0xFFec5b13).withOpacity(0.5),
+                        color: const Color(0xFF3CF2FF).withOpacity(0.5),
                       ),
                     );
                   },
@@ -550,14 +605,14 @@ class OnboardingPageWidget extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFFec5b13).withOpacity(0.1),
-                            const Color(0xFF1a110d),
+                            const Color(0xFF3CF2FF).withOpacity(0.1),
+                            const Color(0xFF0B1020),
                           ],
                         ),
                       ),
                       child: Center(
                         child: CircularProgressIndicator(
-                          color: const Color(0xFFec5b13),
+                          color: const Color(0xFF3CF2FF),
                           value: loadingProgress.expectedTotalBytes != null
                               ? loadingProgress.cumulativeBytesLoaded /
                               loadingProgress.expectedTotalBytes!
@@ -645,7 +700,7 @@ class OnboardingPageWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: const Color(0xFFec5b13).withOpacity(0.3),
+          color: const Color(0xFF3CF2FF).withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -660,49 +715,49 @@ class OnboardingPageWidget extends StatelessWidget {
               fit: BoxFit.cover,
               width: double.infinity,
               height: 160.h,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFFec5b13).withOpacity(0.1),
-                        const Color(0xFF1a110d),
-                      ],
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.image_outlined,
-                    size: 40.sp,
-                    color: const Color(0xFFec5b13).withOpacity(0.5),
-                  ),
-                );
-              },
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFFec5b13).withOpacity(0.1),
-                        const Color(0xFF1a110d),
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: const Color(0xFFec5b13),
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                          : null,
-                    ),
-                  ),
-                );
-              },
+               errorBuilder: (context, error, stackTrace) {
+                 return Container(
+                   decoration: BoxDecoration(
+                     gradient: LinearGradient(
+                       begin: Alignment.topLeft,
+                       end: Alignment.bottomRight,
+                       colors: [
+                         const Color(0xFF3CF2FF).withOpacity(0.1),
+                         const Color(0xFF0B1020),
+                       ],
+                     ),
+                   ),
+                   child: Icon(
+                     Icons.image_outlined,
+                     size: 40.sp,
+                     color: const Color(0xFF3CF2FF).withOpacity(0.5),
+                   ),
+                 );
+               },
+               loadingBuilder: (context, child, loadingProgress) {
+                 if (loadingProgress == null) return child;
+                 return Container(
+                   decoration: BoxDecoration(
+                     gradient: LinearGradient(
+                       begin: Alignment.topLeft,
+                       end: Alignment.bottomRight,
+                       colors: [
+                         const Color(0xFF3CF2FF).withOpacity(0.1),
+                         const Color(0xFF0B1020),
+                       ],
+                     ),
+                   ),
+                   child: Center(
+                     child: CircularProgressIndicator(
+                       color: const Color(0xFF3CF2FF),
+                       value: loadingProgress.expectedTotalBytes != null
+                           ? loadingProgress.cumulativeBytesLoaded /
+                           loadingProgress.expectedTotalBytes!
+                           : null,
+                     ),
+                   ),
+                 );
+               },
             ),
 
             // Overlay gradient
@@ -777,19 +832,24 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFFec5b13).withOpacity(0.08),
-            const Color(0xFFec5b13).withOpacity(0.02),
+            const Color(0xFF3CF2FF).withOpacity(0.08),
+            const Color(0xFFB05CFF).withOpacity(0.04),
           ],
         ),
         border: Border.all(
-          color: const Color(0xFFec5b13).withOpacity(0.2),
+          color: const Color(0xFF3CF2FF).withOpacity(0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: const Color(0xFF3CF2FF).withOpacity(0.1),
             blurRadius: 12,
             spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: const Color(0xFFB05CFF).withOpacity(0.05),
+            blurRadius: 8,
+            spreadRadius: 1,
           ),
         ],
       ),
@@ -807,10 +867,10 @@ class OnboardingPageWidget extends StatelessWidget {
               height: height,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: const Color(0xFF1a110d),
+                  color: const Color(0xFF0B1020),
                   child: Icon(
                     Icons.image_not_supported,
-                    color: const Color(0xFFec5b13).withOpacity(0.5),
+                    color: const Color(0xFF3CF2FF).withOpacity(0.5),
                     size: 30.sp,
                   ),
                 );
@@ -818,10 +878,10 @@ class OnboardingPageWidget extends StatelessWidget {
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(
-                  color: const Color(0xFF1a110d),
+                  color: const Color(0xFF0B1020),
                   child: Center(
                     child: CircularProgressIndicator(
-                      color: const Color(0xFFec5b13),
+                      color: const Color(0xFF3CF2FF),
                       value: loadingProgress.expectedTotalBytes != null
                           ? loadingProgress.cumulativeBytesLoaded /
                           loadingProgress.expectedTotalBytes!
@@ -832,7 +892,7 @@ class OnboardingPageWidget extends StatelessWidget {
               },
             )
                 : Container(
-              color: const Color(0xFF1a110d),
+              color: const Color(0xFF0B1020),
               child: Icon(
                 Icons.image_outlined,
                 color: const Color(0xFFec5b13).withOpacity(0.5),
@@ -1057,4 +1117,3 @@ class OnboardingPageWidget extends StatelessWidget {
       ),
     );
   }
-}
