@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:promptseen/controller/detail_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,11 +41,9 @@ class DetailScreen extends GetView<DetailController> {
               ),
               // Teal glow — bottom left
               Positioned(
-                bottom: -80,
-                left: -60,
+                bottom: -80, left: -60,
                 child: Container(
-                  width: 260,
-                  height: 260,
+                  width: 260, height: 260,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
@@ -56,7 +56,7 @@ class DetailScreen extends GetView<DetailController> {
               // Main scroll content
               CustomScrollView(
                 slivers: [
-                  // ── AppBar ──────────────────────────────────────────────
+                  // ── AppBar ───────────────────────────────────────────
                   SliverAppBar(
                     backgroundColor: _bgDeep,
                     elevation: 0,
@@ -129,7 +129,7 @@ class DetailScreen extends GetView<DetailController> {
                     ],
                   ),
 
-                  // ── Main Image ─────────────────────────────────────────
+                  // ── Main Image ───────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
@@ -137,7 +137,7 @@ class DetailScreen extends GetView<DetailController> {
                     ),
                   ),
 
-                  // ── Typing Prompt Card ─────────────────────────────────
+                  // ── Typing Prompt Card ───────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -147,7 +147,7 @@ class DetailScreen extends GetView<DetailController> {
                     ),
                   ),
 
-                  // ── Copy Action Button ─────────────────────────────────
+                  // ── Copy Button ──────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
@@ -155,7 +155,7 @@ class DetailScreen extends GetView<DetailController> {
                     ),
                   ),
 
-                  // ── Generate Buttons ───────────────────────────────────
+                  // ── Generate Buttons ─────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -194,10 +194,7 @@ class DetailScreen extends GetView<DetailController> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            _purple.withOpacity(0.5),
-            _teal.withOpacity(0.4),
-          ],
+          colors: [_purple.withOpacity(0.5), _teal.withOpacity(0.4)],
         ),
       ),
       padding: const EdgeInsets.all(1.5),
@@ -229,7 +226,7 @@ class DetailScreen extends GetView<DetailController> {
                 ),
               ),
             ),
-            // Bottom fade overlay
+            // Bottom fade
             Positioned(
               bottom: 0, left: 0, right: 0,
               child: Container(
@@ -238,15 +235,12 @@ class DetailScreen extends GetView<DetailController> {
                   gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
-                    colors: [
-                      _bgDeep.withOpacity(0.6),
-                      Colors.transparent,
-                    ],
+                    colors: [_bgDeep.withOpacity(0.6), Colors.transparent],
                   ),
                 ),
               ),
             ),
-            // Share button
+            // Share
             Positioned(
               top: 16, left: 16,
               child: GestureDetector(
@@ -256,16 +250,13 @@ class DetailScreen extends GetView<DetailController> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _bgCard.withOpacity(0.85),
-                    border: Border.all(
-                      color: _teal.withOpacity(0.35),
-                      width: 1,
-                    ),
+                    border: Border.all(color: _teal.withOpacity(0.35), width: 1),
                   ),
                   child: const Icon(Icons.share, color: _teal, size: 16),
                 ),
               ),
             ),
-            // Favorite button
+            // Favorite
             Positioned(
               top: 16, right: 16,
               child: GestureDetector(
@@ -276,9 +267,7 @@ class DetailScreen extends GetView<DetailController> {
                     shape: BoxShape.circle,
                     color: _bgCard.withOpacity(0.85),
                     border: Border.all(
-                      color: _purple.withOpacity(0.35),
-                      width: 1,
-                    ),
+                        color: _purple.withOpacity(0.35), width: 1),
                   ),
                   child: Icon(
                     controller.isFavorite
@@ -298,7 +287,7 @@ class DetailScreen extends GetView<DetailController> {
     );
   }
 
-  // ── Copy Action Row ───────────────────────────────────────────────────────
+  // ── Copy Button ───────────────────────────────────────────────────────────
 
   Widget _buildActionButtons(DetailController controller) {
     return Row(
@@ -328,10 +317,7 @@ class DetailScreen extends GetView<DetailController> {
               end: Alignment.bottomRight,
               colors: [_bgCard, _bgCardLight],
             ),
-            border: Border.all(
-              color: _purple.withOpacity(0.25),
-              width: 1,
-            ),
+            border: Border.all(color: _purple.withOpacity(0.25), width: 1),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -373,7 +359,7 @@ class DetailScreen extends GetView<DetailController> {
           icon: Icons.auto_awesome,
           gradientColors: const [Color(0xFF7B4FD4), Color(0xFF3EC6C6)],
           glowColor: _purple,
-          onTap: () => _openAiWithPrompt(
+          onTap: () => _showImageOrDirectDialog(
             controller,
             promptText: promptText,
             target: _AiTarget.gemini,
@@ -385,7 +371,7 @@ class DetailScreen extends GetView<DetailController> {
           icon: Icons.smart_toy_outlined,
           gradientColors: const [Color(0xFF3EC6C6), Color(0xFF6A5ACD)],
           glowColor: _teal,
-          onTap: () => _openAiWithPrompt(
+          onTap: () => _showImageOrDirectDialog(
             controller,
             promptText: promptText,
             target: _AiTarget.chatgpt,
@@ -442,7 +428,405 @@ class DetailScreen extends GetView<DetailController> {
     );
   }
 
-  // ── AI URL Launcher ───────────────────────────────────────────────────────
+  // ── Bottom Sheet: Choose send mode ────────────────────────────────────────
+
+  void _showImageOrDirectDialog(
+      DetailController controller, {
+        required String promptText,
+        required _AiTarget target,
+      }) {
+    final name = target == _AiTarget.chatgpt ? 'ChatGPT' : 'Gemini';
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+        decoration: const BoxDecoration(
+          color: Color(0xFF13152B),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40, height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: _borderColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            // Title
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [_purple, _teal],
+              ).createShader(bounds),
+              child: Text(
+                'Send to $name',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Choose how to send your prompt',
+              style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 24),
+
+            // Option 1 — Prompt only
+            _buildBottomSheetOption(
+              icon: Icons.send_rounded,
+              iconColor: _teal,
+              title: 'Send Prompt Only',
+              subtitle: 'Open $name with prompt pre-filled',
+              onTap: () {
+                Get.back();
+                _openAiWithPrompt(controller,
+                    promptText: promptText, target: target);
+              },
+            ),
+            const SizedBox(height: 12),
+
+            // Option 2 — Gallery
+            _buildBottomSheetOption(
+              icon: Icons.add_photo_alternate_rounded,
+              iconColor: _purple,
+              title: 'Pick Image + Send Prompt',
+              subtitle: 'Select from gallery, then open $name',
+              onTap: () {
+                Get.back();
+                _pickImageAndSend(controller,
+                    promptText: promptText, target: target);
+              },
+            ),
+            const SizedBox(height: 12),
+
+            // Option 3 — Camera
+            _buildBottomSheetOption(
+              icon: Icons.camera_alt_rounded,
+              iconColor: const Color(0xFFFFCB47),
+              title: 'Take Photo + Send Prompt',
+              subtitle: 'Use camera, then open $name',
+              onTap: () {
+                Get.back();
+                _pickImageAndSend(controller,
+                    promptText: promptText,
+                    target: target,
+                    fromCamera: true);
+              },
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildBottomSheetOption({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: _bgCardLight,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: _borderColor, width: 1),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46, height: 46,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: iconColor.withOpacity(0.25), width: 1),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.grey[500]),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: Colors.grey[600]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Image Picker ──────────────────────────────────────────────────────────
+
+  Future<void> _pickImageAndSend(
+      DetailController controller, {
+        required String promptText,
+        required _AiTarget target,
+        bool fromCamera = false,
+      }) async {
+    final picker = ImagePicker();
+    final XFile? picked = await picker.pickImage(
+      source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (picked == null) return;
+
+    final confirmed = await _showImagePreviewDialog(picked, promptText, target);
+    if (confirmed != true) return;
+
+    await _openAiWithPrompt(controller,
+        promptText: promptText, target: target);
+  }
+
+  // ── Image Preview Dialog ──────────────────────────────────────────────────
+
+  Future<bool?> _showImagePreviewDialog(
+      XFile image,
+      String promptText,
+      _AiTarget target,
+      ) {
+    final name = target == _AiTarget.chatgpt ? 'ChatGPT' : 'Gemini';
+    return Get.dialog<bool>(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: _bgCard,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: _purple.withOpacity(0.25), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: _purple.withOpacity(0.15),
+                blurRadius: 32,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    width: 3, height: 18,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [_purple, _teal],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Send to $name',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Image preview with gradient border
+              Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [_purple, _teal],
+                  ),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                padding: const EdgeInsets.all(1.5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(11.5),
+                  child: Image.file(
+                    File(image.path),
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // Prompt preview
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _bgCardLight,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: _borderColor, width: 1),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'PROMPT',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.4,
+                        color: _purpleLight,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      promptText.length > 120
+                          ? '${promptText.substring(0, 120)}...'
+                          : promptText,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.85),
+                        height: 1.5,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Info note
+              Container(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _teal.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: _teal.withOpacity(0.2), width: 1),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline_rounded,
+                        size: 14, color: _teal),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Prompt auto-filled in $name. Attach this image inside the app.',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: _teal,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Cancel / Confirm buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Get.back(result: false),
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: _bgCardLight,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: _borderColor, width: 1),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: GestureDetector(
+                      onTap: () => Get.back(result: true),
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF7B4FD4), Color(0xFF3EC6C6)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: _purple.withOpacity(0.35),
+                              blurRadius: 14,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.send_rounded,
+                                color: Colors.white, size: 18),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Open $name',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Open AI URL with prompt ───────────────────────────────────────────────
 
   Future<void> _openAiWithPrompt(
       DetailController controller, {
@@ -450,73 +834,58 @@ class DetailScreen extends GetView<DetailController> {
         required _AiTarget target,
       }) async {
     if (promptText.isEmpty) {
-      Get.snackbar(
-        'Prompt missing',
-        'No prompt text available.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: _bgCardLight,
-        colorText: Colors.white,
-      );
+      Get.snackbar('Prompt missing', 'No prompt text available.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: _bgCardLight,
+          colorText: Colors.white);
       return;
     }
 
-    // Always copy to clipboard first
     controller.copyPrompt();
 
     final encoded = Uri.encodeComponent(promptText);
+    final name = target == _AiTarget.chatgpt ? 'ChatGPT' : 'Gemini';
 
     Uri primaryUri;
     Uri fallbackUri;
 
     switch (target) {
       case _AiTarget.chatgpt:
-      // ?q= directly pre-fills and submits the prompt in ChatGPT web
         primaryUri  = Uri.parse('https://chatgpt.com/?q=$encoded');
         fallbackUri = Uri.parse('https://chatgpt.com/');
         break;
       case _AiTarget.gemini:
-      // Google AI Studio officially supports ?prompt= parameter
         primaryUri  = Uri.parse(
             'https://aistudio.google.com/prompts/new_chat?prompt=$encoded');
         fallbackUri = Uri.parse('https://gemini.google.com/app');
         break;
     }
 
-    // Try primary URL (with prompt pre-filled)
     if (await canLaunchUrl(primaryUri)) {
       await launchUrl(primaryUri, mode: LaunchMode.externalApplication);
       return;
     }
 
-    // Fallback: open plain app + show paste instruction
     if (await canLaunchUrl(fallbackUri)) {
       await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
-      _showPasteSnackbar(target);
+      Get.snackbar(
+        'Prompt Copied! 📋',
+        'Long press to paste in $name chat',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: _bgCardLight,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.content_paste_rounded, color: _teal),
+        duration: const Duration(seconds: 5),
+      );
       return;
     }
 
-    Get.snackbar(
-      'Unable to open',
-      'Please try again later.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: _bgCardLight,
-      colorText: Colors.white,
-    );
-  }
-
-  void _showPasteSnackbar(_AiTarget target) {
-    final name = target == _AiTarget.chatgpt ? 'ChatGPT' : 'Gemini';
-    Get.snackbar(
-      'Prompt Copied! 📋',
-      'Long press to paste in $name chat',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: _bgCardLight,
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 12,
-      icon: const Icon(Icons.content_paste_rounded, color: _teal),
-      duration: const Duration(seconds: 5),
-    );
+    Get.snackbar('Unable to open', 'Please try again later.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: _bgCardLight,
+        colorText: Colors.white);
   }
 }
 
@@ -567,21 +936,21 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
     _slideAnim = Tween<Offset>(
       begin: const Offset(0, 0.12),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _enterAnim, curve: Curves.easeOutCubic));
+    ).animate(
+        CurvedAnimation(parent: _enterAnim, curve: Curves.easeOutCubic));
 
-    // Delay so image renders first, then card slides in + typing begins
     Future.delayed(const Duration(milliseconds: 700), () {
       if (!mounted) return;
       _enterAnim.forward();
       _startCursorBlink();
-      Future.delayed(const Duration(milliseconds: 300), _startTyping);
+      Future.delayed(
+          const Duration(milliseconds: 300), _startTyping);
     });
   }
 
   void _startTyping() {
     if (!mounted) return;
     final total = widget.promptText.length;
-    // Adaptive speed: short = 40ms, medium = 28ms, long = 16ms
     final speed = total < 80 ? 40 : total < 250 ? 28 : 16;
 
     _typingTimer = Timer.periodic(Duration(milliseconds: speed), (t) {
@@ -593,7 +962,6 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
         });
       } else {
         t.cancel();
-        // Stop cursor 1.5s after typing finishes
         Future.delayed(const Duration(milliseconds: 1500), () {
           if (!mounted) return;
           _cursorTimer?.cancel();
@@ -607,9 +975,10 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
   }
 
   void _startCursorBlink() {
-    _cursorTimer = Timer.periodic(const Duration(milliseconds: 520), (_) {
-      if (mounted) setState(() => _cursorVisible = !_cursorVisible);
-    });
+    _cursorTimer =
+        Timer.periodic(const Duration(milliseconds: 520), (_) {
+          if (mounted) setState(() => _cursorVisible = !_cursorVisible);
+        });
   }
 
   @override
@@ -620,8 +989,9 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
     super.dispose();
   }
 
-  double get _progress =>
-      widget.promptText.isEmpty ? 0 : _charIndex / widget.promptText.length;
+  double get _progress => widget.promptText.isEmpty
+      ? 0
+      : _charIndex / widget.promptText.length;
 
   @override
   Widget build(BuildContext context) {
@@ -650,7 +1020,7 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Header ──────────────────────────────────────────────
+              // Header row
               Row(
                 children: [
                   Container(
@@ -675,7 +1045,6 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
                     ),
                   ),
                   const Spacer(),
-                  // Badge: typing… / ✓ ready
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 400),
                     child: _isDone
@@ -684,14 +1053,15 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
                       label: '✓ ready',
                       color: _teal,
                     )
-                        : _buildTypingBadge(key: const ValueKey('typing')),
+                        : _buildTypingBadge(
+                        key: const ValueKey('typing')),
                   ),
                 ],
               ),
 
               const SizedBox(height: 14),
 
-              // ── Typed text + cursor ──────────────────────────────────
+              // Typed text + cursor
               RichText(
                 text: TextSpan(
                   children: [
@@ -711,8 +1081,7 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
                         opacity: _cursorVisible ? 1.0 : 0.0,
                         duration: const Duration(milliseconds: 80),
                         child: Container(
-                          width: 2,
-                          height: 18,
+                          width: 2, height: 18,
                           margin: const EdgeInsets.only(left: 2),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
@@ -729,7 +1098,7 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
                 ),
               ),
 
-              // ── Progress bar (hidden when done) ─────────────────────
+              // Progress bar
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 child: _isDone
@@ -741,14 +1110,15 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
                     child: TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0, end: _progress),
                       duration: const Duration(milliseconds: 120),
-                      builder: (_, val, __) => LinearProgressIndicator(
-                        value: val,
-                        minHeight: 2,
-                        backgroundColor: _purple.withOpacity(0.10),
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _purple.withOpacity(0.65),
-                        ),
-                      ),
+                      builder: (_, val, __) =>
+                          LinearProgressIndicator(
+                            value: val,
+                            minHeight: 2,
+                            backgroundColor: _purple.withOpacity(0.10),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              _purple.withOpacity(0.65),
+                            ),
+                          ),
                     ),
                   ),
                 ),
@@ -814,7 +1184,7 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Pulsing Dot widget (for typing badge)
+// Pulsing Dot
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _PulsingDot extends StatefulWidget {
