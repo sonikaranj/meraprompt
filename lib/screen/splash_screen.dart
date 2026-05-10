@@ -162,8 +162,8 @@ class SplashScreen extends GetView<SplashController> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Image.network(
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCSuZ_6gQI96_AOjdTsZ4EgwtfjI5NN_pyjS-m8-WqhX_dnZ_B1OPALSpcCU1nEMw_UuK3N-8lSJA2Yvw2ZVlZUxF2EwVQMCDVnjj6ftLukehfw__R5jJu5pGj5Fm5VWFmOCuxvc6YAl6yejel3yipGTLRTyl659D4dEnUTjSVDHbo9fbqgr4h8yPT8ujMq6VYNSzzWE6BjzUTm0qn3JkfFefPRZFxI90F5wCsBpXj_RcT5orjpLnyS9374ZrqAjTtp1D3c0W2Ukj-b',
                               fit: BoxFit.contain,
+                              'https://promptmera.com/logo.png',
                               filterQuality: FilterQuality.high,
                             ),
                           ),

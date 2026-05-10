@@ -8,7 +8,6 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:get/get.dart';
 import 'package:promptseen/comman/serviceapp/FirstLaunchService.dart';
 
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class TranscriptionAISplash extends StatefulWidget {
   const TranscriptionAISplash({super.key});
@@ -101,7 +100,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
 
     // Config + ads + routing
     _loadConfigAndNavigate();
-    checkPrimium();
+    // checkPrimium();
   }
 
   Future<void> _initATT() async {
@@ -189,32 +188,32 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
     }
   }
 
-  Future<void> checkPrimium() async {
-    var IsPrimiumUser = await FirstLaunchService.isUserPremium();
-    print(IsPrimiumUser);
-    AppConfig.IsPrimiumUser = IsPrimiumUser;
-    if (IsPrimiumUser == false) {
-      final info = await Purchases.getCustomerInfo();
-      print(info);
-      print(info.activeSubscriptions);
-      if (info.activeSubscriptions.length == 1) {
-        await FirstLaunchService.setUserPremium(true);
-        setState(() {
-          AppConfig.IsPrimiumUser = true;
-        });
-      } else {
-        await FirstLaunchService.setUserPremium(false);
-        setState(() {
-          AppConfig.IsPrimiumUser = false;
-        });
-      }
-    }
-    setState(() {
-      AppConfig.IsPrimiumUser = IsPrimiumUser;
-    });
-    print(IsPrimiumUser);
-    print("karan");
-  }
+  // Future<void> checkPrimium() async {
+  //   var IsPrimiumUser = await FirstLaunchService.isUserPremium();
+  //   print(IsPrimiumUser);
+  //   AppConfig.IsPrimiumUser = IsPrimiumUser;
+  //   if (IsPrimiumUser == false) {
+  //     final info = await Purchases.getCustomerInfo();
+  //     print(info);
+  //     print(info.activeSubscriptions);
+  //     if (info.activeSubscriptions.length == 1) {
+  //       await FirstLaunchService.setUserPremium(true);
+  //       setState(() {
+  //         AppConfig.IsPrimiumUser = true;
+  //       });
+  //     } else {
+  //       await FirstLaunchService.setUserPremium(false);
+  //       setState(() {
+  //         AppConfig.IsPrimiumUser = false;
+  //       });
+  //     }
+  //   }
+  //   setState(() {
+  //     AppConfig.IsPrimiumUser = IsPrimiumUser;
+  //   });
+  //   print(IsPrimiumUser);
+  //   print("karan");
+  // }
 
   @override
   void dispose() {

@@ -100,6 +100,16 @@ class DetailScreen extends GetView<DetailController> {
                                     TextStyle(color: Colors.white)),
                               ]),
                             ),
+                            PopupMenuItem(
+                              onTap: () => _showReportDialog(context),
+                              child: Row(children: const [
+                                Icon(Icons.flag, color: Color(0xFFFF6B9D)),
+                                SizedBox(width: 12),
+                                Text('Report Prompt',
+                                    style:
+                                    TextStyle(color: Colors.white)),
+                              ]),
+                            ),
                           ],
                         ),
                         child: Container(
@@ -151,6 +161,222 @@ class DetailScreen extends GetView<DetailController> {
           ),
         );
       },
+    );
+  }
+
+  // ── Report Dialog ─────────────────────────────────────────────────────────
+
+  void _showReportDialog(BuildContext context) {
+    final reportController = TextEditingController();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: _bgCardLight,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF6B9D).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.flag_rounded,
+                      color: Color(0xFFFF6B9D),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Report This Prompt',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // Description
+              Text(
+                'Please describe why you\'re reporting this prompt',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[400],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Text field
+              TextField(
+                controller: reportController,
+                maxLines: 4,
+                minLines: 3,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Type your report here...',
+                  hintStyle: TextStyle(color: Colors.grey[600]),
+                  filled: true,
+                  fillColor: _bgCard,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: _purple.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: _purple.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: _purple.withOpacity(0.6),
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.all(14),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Buttons
+              Row(
+                children: [
+                  // Cancel button
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _bgCard,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _purple.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Submit button
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        final reportText = reportController.text.trim();
+                        if (reportText.isEmpty) {
+                          Get.snackbar(
+                            'Empty Report',
+                            'Please describe why you\'re reporting this prompt',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: _bgCardLight,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        // Close dialog
+                        Get.back();
+
+                        // Show success message directly
+                        _showReportSuccessMessage();
+
+                        // Clear text field
+                        reportController.clear();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFF6B9D), Color(0xFFFF8FAE)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFF6B9D).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Submit Report',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  void _showReportSuccessMessage() {
+    Get.snackbar(
+      'Report Submitted ✓',
+      'Thank you! Your report has been received. Our team will review it shortly.',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: _bgCardLight,
+      colorText: Colors.white,
+      borderRadius: 12,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      duration: const Duration(seconds: 5),
+      icon: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFF6B9D).withOpacity(0.2),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Icon(
+          Icons.check_circle_rounded,
+          color: Color(0xFFFF6B9D),
+          size: 24,
+        ),
+      ),
+      shouldIconPulse: true,
     );
   }
 

@@ -315,7 +315,30 @@ class _ProfileScreenState extends State<ProfileScreen>
                           onTap: () => Share.share("Discover PromptMera! $appShareLink")),
                       _buildMenuTile(icon: Icons.star_rounded, title: 'Rate Us',
                           subtitle: 'Leave a review', accentColor: const Color(0xFFFFCB47),
-                          onTap: () async => await RatingService.requestReview()),
+                          onTap: () async{
+
+                            const packageName = "com.promptmera.ai";
+
+                            final Uri playStoreUri = Uri.parse(
+                              "market://details?id=$packageName",
+                            );
+
+                            final Uri webUri = Uri.parse(
+                              "https://play.google.com/store/apps/details?id=$packageName",
+                            );
+
+                            try {
+                              await launchUrl(
+                                playStoreUri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } catch (e) {
+                              await launchUrl(
+                                webUri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          }),
                       _buildMenuTile(icon: Icons.mail_rounded, title: 'Contact Support',
                           subtitle: 'Get help & feedback', accentColor: const Color(0xFFFF6B9D),
                           onTap: _launchEmail),
@@ -384,7 +407,19 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void _launchEmail() async {
-    final Uri emailLaunchUri = Uri(scheme: 'mailto', path: supportEmail);
-    if (await canLaunchUrl(emailLaunchUri)) await launchUrl(emailLaunchUri);
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: 'support@promptmera.com',
+      query: 'subject=Support',
+    );
+
+    try {
+      await launchUrl(
+        params,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (e) {
+      print("Email launch error: $e");
+    }
   }
 }

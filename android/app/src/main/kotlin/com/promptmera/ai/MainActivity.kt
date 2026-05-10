@@ -1,4 +1,4 @@
-package com.promptseen.ai
+package com.promptmera.ai
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

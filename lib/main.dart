@@ -1,16 +1,13 @@
 import 'dart:io';
 import 'package:promptseen/Admob/Admob_service.dart';
 import 'package:promptseen/Admob/config_loader.dart';
-import 'package:promptseen/comman/splash_Screen.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:promptseen/routes.dart';
-import 'package:promptseen/screen/splash_screen.dart';
-import 'package:purchases_flutter/models/purchases_configuration.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,30 +25,30 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final configuration = PurchasesConfiguration("appl_wdqtlZVNCmNrWvzErXYovMeiviy");
+  // final configuration = PurchasesConfiguration("");
 
   @override
   void initState() {
     super.initState();
 
     // Wait for widget to be fully initialized before calling ATT
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initATT();
-    });
-    _configureSDK();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _initATT();
+    // });
+    // _configureSDK();
   }
 
   Future<void> _configureSDK() async {
     // Enable debug mode (disable for production)
-    await Purchases.setLogLevel(LogLevel.debug);
+    // await Purchases.setLogLevel(LogLevel.debug);
+    //
+    // PurchasesConfiguration configuration = PurchasesConfiguration("");
+    //
+    // // This is the critical missing line - you need to actually configure Purchases
+    // await Purchases.configure(configuration);
 
-    PurchasesConfiguration configuration = PurchasesConfiguration("appl_lhQJbNAFJjmNihHpFxTAsLXqZay");
-
-    // This is the critical missing line - you need to actually configure Purchases
-    await Purchases.configure(configuration);
-
-    print("RevenueCat SDK configured successfully");
-    print("Configuration: $configuration");
+    // print("RevenueCat SDK configured successfully");
+    // print("Configuration: $configuration");
   }
 
   Future<void> _initATT() async {
@@ -144,7 +141,7 @@ class _MyAppState extends State<MyApp> {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'PromptSeen',
+          title: 'Prompt Mera – AI Photo Editing',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             fontFamily: 'Montserrat',

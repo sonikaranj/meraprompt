@@ -879,17 +879,52 @@ class _SocialBtn extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// PROMPTS GRID
+// PROMPTS GRID WITH LAZY LOADING
 // ═══════════════════════════════════════════════════════════════════
-class _PromptsGrid extends StatelessWidget {
+class _PromptsGrid extends StatefulWidget {
   final HomeController ctrl;
   final HomeScreen screen;
 
   const _PromptsGrid({required this.ctrl, required this.screen});
 
   @override
+  State<_PromptsGrid> createState() => _PromptsGridState();
+}
+
+class _PromptsGridState extends State<_PromptsGrid> {
+  // Lazy loading variables
+  late ScrollController _scrollController;
+  int _visibleCount = 10; // Initially load 10 items
+  static const int _itemsPerBatch = 10; // Load 10 more items per scroll
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Load more items when user scrolls near the bottom
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      setState(() {
+        _visibleCount = (_visibleCount + _itemsPerBatch)
+            .clamp(0, widget.ctrl.getFilteredPrompts().length);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (ctrl.isLoading) {
+    if (widget.ctrl.isLoading) {
       return SliverFillRemaining(
         child: Center(
           child: Column(
@@ -900,8 +935,7 @@ class _PromptsGrid extends StatelessWidget {
                 height: 40,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor:
-                  AlwaysStoppedAnimation(HomeScreen._c2),
+                  valueColor: AlwaysStoppedAnimation(HomeScreen._c2),
                 ),
               ),
               const SizedBox(height: 16),
@@ -919,7 +953,8 @@ class _PromptsGrid extends StatelessWidget {
       );
     }
 
-    final prompts = ctrl.getFilteredPrompts();
+    final prompts = widget.ctrl.getFilteredPrompts();
+    final visiblePrompts = prompts.take(_visibleCount).toList();
 
     if (prompts.isEmpty) {
       return SliverFillRemaining(
@@ -936,7 +971,7 @@ class _PromptsGrid extends StatelessWidget {
                   border: Border.all(color: HomeScreen._cardBorder, width: 1),
                 ),
                 child: Icon(
-                  ctrl.showFavoritesOnly
+                  widget.ctrl.showFavoritesOnly
                       ? Icons.favorite_border_rounded
                       : Icons.search_off_rounded,
                   color: const Color(0xFF374151),
@@ -945,7 +980,7 @@ class _PromptsGrid extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                ctrl.showFavoritesOnly
+                widget.ctrl.showFavoritesOnly
                     ? 'No favourites yet'
                     : 'No prompts found',
                 style: const TextStyle(
@@ -956,7 +991,7 @@ class _PromptsGrid extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                ctrl.showFavoritesOnly
+                widget.ctrl.showFavoritesOnly
                     ? 'Tap the heart on any prompt to save it'
                     : 'Try a different search or category',
                 style: const TextStyle(
@@ -978,24 +1013,48 @@ class _PromptsGrid extends StatelessWidget {
         mainAxisSpacing: 12,
       ),
       delegate: SliverChildBuilderDelegate(
-            (ctx, i) => _PromptCard(
-          prompt: prompts[i],
-          ctrl: ctrl,
-        ),
-        childCount: prompts.length,
+            (ctx, i) {
+          // Show loading indicator for upcoming items
+          if (i >= visiblePrompts.length) {
+            return const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor:
+                  AlwaysStoppedAnimation(HomeScreen._c2),
+                ),
+              ),
+            );
+          }
+
+          return _PromptCard(
+            prompt: visiblePrompts[i],
+            ctrl: widget.ctrl,
+            screen: widget.screen,
+          );
+        },
+        childCount: visiblePrompts.length +
+            (visiblePrompts.length < prompts.length ? 1 : 0),
       ),
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// PROMPT CARD
+// PROMPT CARD WITH ENHANCED CACHED NETWORK IMAGE
 // ═══════════════════════════════════════════════════════════════════
 class _PromptCard extends StatelessWidget {
   final dynamic prompt;
   final HomeController ctrl;
+  final HomeScreen screen;
 
-  const _PromptCard({required this.prompt, required this.ctrl});
+  const _PromptCard({
+    required this.prompt,
+    required this.ctrl,
+    required this.screen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1030,21 +1089,11 @@ class _PromptCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             children: [
-              // ── Image ─────────────────────────────────────────
+              // ── Image with Lazy Loading ──────────────────────────
               Positioned.fill(
-                child: CachedNetworkImage(
+                child: _EnhancedCachedNetworkImage(
                   imageUrl: prompt.imageUrl,
                   fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => Container(
-                    color: HomeScreen._card,
-                    child: const Center(
-                      child: Icon(
-                        Icons.broken_image_outlined,
-                        color: Color(0xFF374151),
-                        size: 36,
-                      ),
-                    ),
-                  ),
                 ),
               ),
               // ── Gradient overlay ──────────────────────────────
@@ -1192,6 +1241,126 @@ class _PromptCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ENHANCED CACHED NETWORK IMAGE WIDGET
+// ═══════════════════════════════════════════════════════════════════
+class _EnhancedCachedNetworkImage extends StatelessWidget {
+  final String imageUrl;
+  final BoxFit fit;
+
+  const _EnhancedCachedNetworkImage({
+    required this.imageUrl,
+    this.fit = BoxFit.cover,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageUrl.isEmpty) {
+      return _buildPlaceholder();
+    }
+
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: fit,
+      width: double.infinity,
+      height: double.infinity,
+      // ✅ Placeholder while loading
+      placeholder: (context, url) => _buildLoadingPlaceholder(),
+      // ✅ Error widget if loading fails
+      errorWidget: (context, url, error) {
+        debugPrint('❌ Image Error: $url - $error');
+        return _buildErrorPlaceholder();
+      },
+      // ✅ Fade in animation duration
+      fadeInDuration: const Duration(milliseconds: 500),
+      fadeOutDuration: const Duration(milliseconds: 300),
+      // ✅ Memory cache duration (keep in memory for 7 days)
+      cacheManager: null, // Uses default cache manager
+    );
+  }
+
+  // Placeholder while image loads
+  Widget _buildLoadingPlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: HomeScreen._card,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor:
+                AlwaysStoppedAnimation(HomeScreen._c2.withOpacity(0.6)),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Loading...',
+              style: TextStyle(
+                color: HomeScreen._c2.withOpacity(0.5),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Error placeholder
+  Widget _buildErrorPlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: HomeScreen._card,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.broken_image_outlined,
+              color: HomeScreen._c1.withOpacity(0.4),
+              size: 40,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Failed to load',
+              style: TextStyle(
+                color: Color(0xFF6B7280),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Default placeholder if URL is empty
+  Widget _buildPlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: HomeScreen._card,
+      child: Center(
+        child: Icon(
+          Icons.image_outlined,
+          color: HomeScreen._cardBorder,
+          size: 40,
         ),
       ),
     );

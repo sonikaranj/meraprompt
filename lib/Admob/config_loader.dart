@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 
 class ConfigLoader {
   // Always fetch from this URL
-  static const String url = 'https://promptseen.com/promptseenapp/json.json';
-
   // Fetch on app open; no caching to disk
+
+  static const String url = 'https://promptmera.com/applicationv1/json.json';
   static Future<void> load() async {
     try {
       final resp = await http

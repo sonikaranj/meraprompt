@@ -53,9 +53,9 @@ class HomeController extends GetxController {
   final box = GetStorage();
 
   final String apiUrl =
-      'https://promptseen.com/promptseenapp/api.php?action=get_prompts&api_key=PROMPTSEEN_ADMIN_123';
+      'https://promptmera.com/applicationv1/api.php?action=get_prompts&api_key=PROMPTSEEN_ADMIN_123';
   final String categoriesApiUrl =
-      'https://promptseen.com/promptseenapp/api.php?action=get_categories&api_key=PROMPTSEEN_ADMIN_123';
+      'https://promptmera.com/applicationv1/api.php?action=get_categories&api_key=PROMPTSEEN_ADMIN_123';
 
   List<String> categories = ['All'];
 

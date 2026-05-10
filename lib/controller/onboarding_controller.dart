@@ -1,42 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:promptseen/Admob/Admob_service.dart';
 
 class OnboardingController extends GetxController {
-  final currentPage = 0.obs;
-  final pageController = PageController();
+  late PageController pageController;
+  RxInt currentPage = 0.obs;
 
-  final List<OnboardingPage> pages = [
-    OnboardingPage(
-      title: 'Find Powerful',
-      titleHighlight: 'AI Prompts',
-      description: 'Discover thousands of trending AI photo prompts for cinematic portraits, anime art, Instagram photos, and creative edits.',
-      images: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuC0buLWg1cWGPfEoWi_Yjy8Gzr8EIpSXrTY8RWVxg-o7C4CPM0q6t6dru7gnHmrFwDNQXAsZ9mP6kCiOja6Ew895x9tN7U03dj7RzVEkhKXxgdl5lJ3KeykgdL9CPcNOkpqMespQAeccoWb7B9mDCWGuZMvT_F-DZ_rYiU4lESB6Rv0jxWR3foV-hpz9v0w8pVU3Qf0LOQZryQAUa7AkBJC4Yq9mkyikNAogjSGbmVO2NP6wslb3BWBbzprU014oWzdTzyUmUJN8WRv',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAPK_LWfu1qniSxxqUaycatxJK96KAYciKTu5rIfN55zzYqGZxwd7uBoEuwJ56AHdTzE0IeTBAJ3Z3aO_Xa3tRp9MTvMMTAd-gFR7LDrZ_l95imyHU2-xv840NcdOlalCPz5ELUm0P_z7sXXshefWorYbRqpfMU8pG4a-ji8Fuzc8l_TV88jPgRyBsvCrbOBsx--_PzkW-xNiRwSY6FOfqD9Yfz_UnhvrunTAsutpx6_2EYbOb2eOxDN6SEsMLTII5Nza22MSYmrCTT',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCRDuaZ3DmwalEvePdxN3B3UlgdNzgpL-GkkP9hMJxsmelQKRmMURbinZOR2bn8J8MUOiEUMYYvMw9Js4WLE11j9Y1_DN5XzT1yYtTchUXg9ZOU-_I_RNtYxlQUwED679gvvuMxkayCnWdCqRdZkN-II7YIfwvLh2zox2yRScakdmNSzWWzbt9V3mcMd_dUAruOfHw7BM5YlsP7dVAgkcTIk4RZINMY_dhdPu7XhBbH25r292WplG8BoU40CkDbJaTrwDFbygM4-svr',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBIBNtdlTY2mJEVS1onp8X0JwZmpCsbz_3pYaA3GXQyO7EKov-FaPzN6EmeqIUj_ULaAFdLDVn-qyAwxEQY7MOtYIcHLY9llasrkZyRQjube3TFzviuAWph77r5hKsVpuQ6kz-FNaH7TrMAQT26gaPcRsY4K2rlqAcxe6NCzE3pxDJVyUCB_35KKGYssuRqi9N5fepqCyiO2OvqOtwg7If_aGYLCzzsOTR9ZWX-TAhPbbeGJ5oslxzgCY84yWbv-HV4napbeSdzTKb9',
-      ],
-    ),
-    OnboardingPage(
-      title: 'Generate',
-      titleHighlight: 'Trending',
-      description: 'Create viral AI photos easily using powerful prompts. Just copy the prompt and generate stunning images instantly.',
-      images: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBKFdaglPRCgeY3TkUv0YB1ook_yyP7g6iKSp696hKN43_2T9ooR9yYFVNXwezccZUpXMsBbQwRAzqLUjwTkAmvufoNpsT4s4OdrXhyOwToAfnfxl8uARfqRNAD6E90HKGwf-qIwJvfJmEqlAwIGQ7TbM6CqsieYAZ2jWPnmShq9bSWuV6lxUg4wRtFXsTLuovz2CweiZ_WRq0Hr0xwnZSfnxlkaw8hV6dCqt8MtGt3I80kvLalTllUtOqbcIJCP5vStkdKrWet8pwK'
-      ],
-    ),
-    OnboardingPage(
-      title: 'Generate Trending',
-      titleHighlight: 'AI Images',
-      description: 'Create viral AI photos easily using powerful prompts. Just copy the prompt and generate stunning images instantly.',
-      images: [
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCUKp_atf__VK7iWK-WVYVFyL_JOWV3qVREdGbolzS96C5IF-D_nFUrGtgCWUzqAhV63u7nLXDv0DJ_3OsnIacidUbkbKPfuQhCYSr-diOi4TEUmH4-lI4LuhZD35LgQp9n0H-QUnJ4RC9h2k7jRdLQ6oswmIfMaoPOGzxWbNXjlazZEOzaBPqwvqLhNeAXiNpZNobIcmE9JNbtPtZ-atmz42TDpLrBvtNcekg-yGesUgPIO52oJg3Jy7rt0Oen1icB-CnhWJ0Nf-xv',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDpG1U4714Ft20CoN3I3IuB073pWmsoA7j2y-hxTofnEnxNpCyQVM5fKKzsGHJ_sUMqpfm-AJi3GduACQwiEFB3nk-nZFWX9httqzE6_FS5asYtgMAlxUutlPeBI5a_Va6SlkRbGIHwkX9e8dxRbVRdxWfgva_f_m6Jji4PogrwZ2K5WYZd-HQwSe3d5uhuMAQpm-HIamiZNyIOUEqkP8KYD6FH5SffX2wZKyIypDNNzVOTItq-DyL0EvnjivFHYuKv-TANPfpbN6na',
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuAQBRts-dRmyq3A8KdnRO5vNG_SuIKSHProRGYDWWbdF-22C1yOpYA2Gv2pNylvMfCP8zs9duKMFmVxWwv-Om7JyBbs5PAQGOsUmrcDHD_b9EApniEQShD9kJgJbU_Yec7uKFWSc5oa79_dTLQrB6IB9Ubj1vuDH-iNUmm8lHJQmOWBzqmK0da7DMLnVPjM_IpPgkF2buz-JNedV65GMUVzdIzvuEIj7bhHbeVcqmZjhwnZ_NKXOjRnwl8mKk8d9GYk-undf3LiPwqw'
-      ],
-    ),
-  ];
+  late List<OnboardingPage> pages;
+
+  @override
+  void onInit() {
+    super.onInit();
+    pageController = PageController();
+    _initializePages();
+  }
+
+  void _initializePages() {
+    pages = [
+      OnboardingPage(
+        title: 'Welcome to',
+        titleHighlight: 'PromptSeen',
+        description:
+        'Transform your ideas into stunning visuals with AI-powered creativity. Create, explore, and share amazing content effortlessly.',
+        images: [
+          'https://cdn.bananaprompts.xyz/e6c0a513-c6ad-4edf-8b11-a4abf17dea9e/58fc38e1-69e3-452e-9624-2e64a60bda12.png?w=828&q=75',
+          'https://cdn.bananaprompts.xyz/ae5f8289-1a58-4605-8d97-0ffa38b6a5cf/76bcf139-247c-40a9-adf1-a450be31a762.jpeg?w=828&q=75',
+        ],
+      ),
+      OnboardingPage(
+        title: 'Create',
+        titleHighlight: 'Amazing Visuals',
+        description:
+        'Use advanced AI models to generate, edit, and transform images. From concepts to creations in seconds.',
+        images: [
+          'https://promptmera.com/applicationv1/1.png',
+        ],
+      ),
+      OnboardingPage(
+        title: 'Explore',
+        titleHighlight: 'Infinite Styles',
+        description:
+        'Choose from cinematic, anime, realistic, and more. Each style brings unique magic to your creations.',
+        images: [
+          'https://promptmera.com/applicationv1/2.png',
+          'https://promptmera.com/applicationv1/3.png',
+          'https://promptmera.com/applicationv1/4.png',
+          'https://promptmera.com/applicationv1/5.png',
+          'https://promptmera.com/applicationv1/6.png',
+          'https://promptmera.com/applicationv1/7.png',
+        ],
+      ),
+    ];
+  }
 
   void nextPage() {
     if (currentPage.value < pages.length - 1) {
@@ -45,22 +59,20 @@ class OnboardingController extends GetxController {
         curve: Curves.easeInOut,
       );
     } else {
-      // Navigate to home
-      final AdController controller = Get.find();
-      controller.showInterstitialAd();
-      print("ddddddddddddd");
-      Get.offNamed('/home');
+      skipOnboarding();
     }
   }
 
   void skipOnboarding() {
+    // Navigate to home screen
     Get.offNamed('/home');
+    // Or you can use: Get.off(() => const HomeScreen());
   }
 
   @override
-  void dispose() {
+  void onClose() {
     pageController.dispose();
-    super.dispose();
+    super.onClose();
   }
 }
 
