@@ -39,8 +39,8 @@ class OnboardingScreen extends GetView<OnboardingController> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF6366F1).withValues(alpha: 0.15),
-                      const Color(0xFF6366F1).withValues(alpha: 0.02),
+                      const Color(0xFF2563EB).withValues(alpha: 0.15),
+                      const Color(0xFF2563EB).withValues(alpha: 0.02),
                     ],
                   ),
                 ),
@@ -84,7 +84,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
                               ),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF6366F1), Color(0xFF06B6D4)],
+                                  colors: [Color(0xFF2563EB), Color(0xFF06B6D4)],
                                 ),
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
@@ -181,7 +181,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
                                   gradient: controller.currentPage.value == index
                                       ? const LinearGradient(
                                     colors: [
-                                      Color(0xFF6366F1),
+                                      Color(0xFF2563EB),
                                       Color(0xFF06B6D4)
                                     ],
                                   )
@@ -192,7 +192,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
                                   boxShadow: controller.currentPage.value == index
                                       ? [
                                     BoxShadow(
-                                      color: const Color(0xFF6366F1)
+                                      color: const Color(0xFF2563EB)
                                           .withValues(alpha: 0.6),
                                       blurRadius: 12,
                                       spreadRadius: 2,
@@ -217,14 +217,14 @@ class OnboardingScreen extends GetView<OnboardingController> {
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                   colors: [
-                                    Color(0xFF6366F1),
+                                    Color(0xFF2563EB),
                                     Color(0xFF3B82F6),
                                     Color(0xFF06B6D4),
                                   ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF6366F1)
+                                    color: const Color(0xFF2563EB)
                                         .withValues(alpha: 0.4),
                                     blurRadius: 20,
                                     spreadRadius: 0,
@@ -316,7 +316,7 @@ class OnboardingPageWidget extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Color(0xFF6366F1),
+                        Color(0xFF2563EB),
                         Color(0xFF06B6D4),
                       ],
                     ).createShader(bounds),
@@ -346,13 +346,13 @@ class OnboardingPageWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF6366F1).withValues(alpha: 0.15),
+                            const Color(0xFF2563EB).withValues(alpha: 0.15),
                             const Color(0xFF06B6D4).withValues(alpha: 0.1),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(8.r),
                         border: Border.all(
-                          color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+                          color: const Color(0xFF2563EB).withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -454,13 +454,13 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF6366F1).withValues(alpha: 0.1),
+            const Color(0xFF2563EB).withValues(alpha: 0.1),
             const Color(0xFF0F0F1E),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+            color: const Color(0xFF2563EB).withValues(alpha: 0.2),
             blurRadius: 30,
             spreadRadius: 0,
           ),
@@ -516,7 +516,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     height: 3.h,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF6366F1), Color(0xFF06B6D4)],
+                        colors: [Color(0xFF2563EB), Color(0xFF06B6D4)],
                       ),
                       borderRadius: BorderRadius.circular(2.r),
                     ),
@@ -681,7 +681,7 @@ class OnboardingPageWidget extends StatelessWidget {
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
-                                    Color(0xFF6366F1),
+                                    Color(0xFF2563EB),
                                     Color(0xFF06B6D4),
                                   ],
                                 ),
@@ -818,7 +818,7 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF6366F1).withValues(alpha: 0.08),
+            const Color(0xFF2563EB).withValues(alpha: 0.08),
             const Color(0xFF0F0F1E),
           ],
         ),
@@ -865,7 +865,7 @@ class OnboardingPageWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [
-                          Color(0xFF6366F1),
+                          Color(0xFF2563EB),
                           Color(0xFF06B6D4),
                         ],
                       ),
@@ -917,7 +917,7 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF6366F1).withValues(alpha: 0.15),
+            const Color(0xFF2563EB).withValues(alpha: 0.15),
             const Color(0xFF06B6D4).withValues(alpha: 0.08),
           ],
         ),
@@ -942,7 +942,7 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF6366F1).withValues(alpha: 0.15),
+            const Color(0xFF2563EB).withValues(alpha: 0.15),
             const Color(0xFF06B6D4).withValues(alpha: 0.08),
           ],
         ),
@@ -956,7 +956,7 @@ class OnboardingPageWidget extends StatelessWidget {
               height: 40.h,
               child: const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Color(0xFF6366F1),
+                  Color(0xFF2563EB),
                 ),
                 strokeWidth: 2.5,
               ),
@@ -986,7 +986,7 @@ class OnboardingPageWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF6366F1).withValues(alpha: 0.12),
+            const Color(0xFF2563EB).withValues(alpha: 0.12),
             const Color(0xFF06B6D4).withValues(alpha: 0.06),
           ],
         ),

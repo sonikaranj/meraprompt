@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the Flutter splash screen background (Color(0xFF0D0F1A)) so the
+         native launch window blends seamlessly into the Flutter splash, with
+         no black/white flash before the first frame is drawn. -->
+    <color name="splash_background">#FF0A0E1A</color>
+</resources>

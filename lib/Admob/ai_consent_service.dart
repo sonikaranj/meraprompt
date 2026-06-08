@@ -137,7 +137,7 @@ class AIConsentService extends GetxService {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF8E54E9),
+                          backgroundColor: const Color(0xFF2563EB),
                         ),
                         onPressed: () => Get.back(result: true),
                         child: const Text("Continue"),
@@ -164,7 +164,7 @@ class AIConsentService extends GetxService {
   Widget _buildFeatureRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF8E54E9), size: 18),
+        Icon(icon, color: const Color(0xFF2563EB), size: 18),
         const SizedBox(width: 8),
         Expanded(
           child: Text(

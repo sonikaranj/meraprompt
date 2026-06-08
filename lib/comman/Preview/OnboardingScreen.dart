@@ -33,8 +33,9 @@ class _ScholarOnboardingFlowState extends State<ScholarOnboardingFlow> {
       duration: const Duration(milliseconds: 320),
       curve: Curves.easeOutCubic,
     );
-    final AdController controller = Get.find();
-    controller.showInterstitialAd();
+    if (Get.isRegistered<AdController>()) {
+      Get.find<AdController>().showInterstitialAd();
+    }
   }
 
   @override
@@ -108,7 +109,7 @@ class _OnboardingShell extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onBack;
 
-  static const _primary = Color(0xFF6C0DF2);
+  static const _primary = Color(0xFF2563EB);
   static const _bgTop = Color(0xFF120821);
   static const _bgMid = Color(0xFF0A0A0C);
   static const _bgBottom = Color(0xFF0A0A0C);
@@ -151,7 +152,7 @@ class _OnboardingShell extends StatelessWidget {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(14),
                                     gradient: const LinearGradient(
-                                      colors: [_primary, Color(0xFF8B3EFF)],
+                                      colors: [_primary, Color(0xFF3B82F6)],
                                     ),
                                     boxShadow: [
                                       BoxShadow(
@@ -329,7 +330,7 @@ class _Step3Content extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF6C0DF2);
+    const primary = Color(0xFF2563EB);
     const teal = Color(0xFF2DD4BF);
 
     return Column(
@@ -475,7 +476,7 @@ class _Step3BenefitsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF6C0DF2);
+    const primary = Color(0xFF2563EB);
     const teal = Color(0xFF2DD4BF);
 
     return ClipRRect(
@@ -657,7 +658,7 @@ class _Step2Background extends StatelessWidget {
               left: 60,
               child: _GlowBlob(
                 size: 260,
-                color: Color(0xFF6C0DF2),
+                color: Color(0xFF2563EB),
                 opacity: 0.20,
                 blur: 100,
               ),
@@ -688,7 +689,7 @@ class _GridOverlay extends StatelessWidget {
       opacity: 0.40,
       child: CustomPaint(
         painter: _RadialGridPainter(
-          dotColor: const Color(0xFF6C0DF2).withOpacity(0.15),
+          dotColor: const Color(0xFF2563EB).withOpacity(0.15),
           spacing: 30,
           radius: 1.0,
         ),
@@ -829,7 +830,7 @@ class _ImageAIIllustration extends StatelessWidget {
             right: -60,
             child: _NeonNode(
               size: 64,
-              glowColor: const Color(0xFF6C0DF2),
+              glowColor: const Color(0xFF2563EB),
               icon: Icons.psychology,
               iconSize: 26,
             ),
@@ -860,7 +861,7 @@ class _ConnectorPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5
       ..shader = const LinearGradient(
-        colors: [Color(0xFF2DD4BF), Color(0xFF6C0DF2)],
+        colors: [Color(0xFF2DD4BF), Color(0xFF2563EB)],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..color = Colors.white.withOpacity(0.6);
 
@@ -935,7 +936,7 @@ class _BottomSheetArea extends StatelessWidget {
                 _ChecklistRow(
                   icon: Icons.chat_bubble,
                   iconBg: Color(0x1A6C0DF2),
-                  iconColor: Color(0xFF6C0DF2),
+                  iconColor: Color(0xFF2563EB),
                   title: 'Interactive Chat',
                   subtitle: 'Ask questions about images',
                 ),
@@ -1017,9 +1018,9 @@ class _AccentPanel extends StatelessWidget {
           height: height,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF6C0DF2).withOpacity(0.20),
+            color: const Color(0xFF2563EB).withOpacity(0.20),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: const Color(0xFF6C0DF2).withOpacity(0.40)),
+            border: Border.all(color: const Color(0xFF2563EB).withOpacity(0.40)),
           ),
           child: child,
         ),
@@ -1200,7 +1201,7 @@ class _ChecklistRow extends StatelessWidget {
 class _PDFHeroOrb extends StatelessWidget {
   const _PDFHeroOrb();
 
-  static const _primary = Color(0xFF6C0DF2);
+  static const _primary = Color(0xFF2563EB);
   static const _accentCyan = Color(0xFF00F2FF);
 
   @override
@@ -1295,7 +1296,7 @@ class _FeatureGlassCard extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  static const _primary = Color(0xFF6C0DF2);
+  static const _primary = Color(0xFF2563EB);
 
   @override
   Widget build(BuildContext context) {
@@ -1325,7 +1326,7 @@ class _FeatureGlassCard extends StatelessWidget {
 class _PDFComparisonStrip extends StatelessWidget {
   const _PDFComparisonStrip();
 
-  static const _primary = Color(0xFF6C0DF2);
+  static const _primary = Color(0xFF2563EB);
 
   @override
   Widget build(BuildContext context) {
@@ -1413,7 +1414,7 @@ class _StepDots extends StatelessWidget {
   final int current;
   final int total;
 
-  static const _primary = Color(0xFF6C0DF2);
+  static const _primary = Color(0xFF2563EB);
 
   @override
   Widget build(BuildContext context) {

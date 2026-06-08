@@ -1,19 +1,25 @@
 import 'dart:io';
-import 'package:promptseen/Admob/Admob_service.dart';
-import 'package:promptseen/Admob/config_loader.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:promptseen/Admob/app_config.dart';
 import 'package:promptseen/routes.dart';
 
+import 'const.dart';
 
-void main() async {
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ConfigLoader.load();
-  await MobileAds.instance.initialize();
-  Get.put(AdController());
+  // Init local storage and load the last server-provided theme colors so the
+  // very first frame already uses them (no flash of default colors). The fresh
+  // theme is fetched from the server during the splash screen.
+  await GetStorage.init();
+  AppConfig.loadThemeCache();
+  // Render the app (and splash screen) immediately so the user never sees a
+  // black screen. All heavy startup work (remote config + ads init) now runs
+  // inside the splash screen while its progress bar animates.
   runApp(const MyApp());
 }
 
@@ -146,7 +152,13 @@ class _MyAppState extends State<MyApp> {
           theme: ThemeData(
             fontFamily: 'Montserrat',
             brightness: Brightness.dark,
-            scaffoldBackgroundColor: const Color(0xFF0A091A),
+            scaffoldBackgroundColor: AppColor.primaryColor,
+            primaryColor: AppColor.themColors,
+            colorScheme: ColorScheme.dark(
+              primary: AppColor.themColors,
+              secondary: AppColor.accent,
+              surface: AppColor.secoundaryColor,
+            ),
             useMaterial3: true,
           ),
           initialRoute: AppRoutes.splash,

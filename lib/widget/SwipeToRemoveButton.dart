@@ -36,14 +36,14 @@
 //             height: 60,
 //             width: double.infinity,
 //             decoration: BoxDecoration(
-//               color: Colors.deepPurple.shade100,
+//               color: Colors.blue.shade100,
 //               borderRadius: BorderRadius.circular(30),
 //             ),
 //             alignment: Alignment.center,
 //             child: Text(
 //               'Swipe to Remove Background',
 //               style: TextStyle(
-//                 color: Colors.deepPurple.shade700,
+//                 color: Colors.blue.shade700,
 //                 fontWeight: FontWeight.w600,
 //                 fontSize: 16,
 //               ),
@@ -57,7 +57,7 @@
 //               height: 60,
 //               width: 60,
 //               decoration: BoxDecoration(
-//                 color: Colors.deepPurple,
+//                 color: Colors.blue,
 //                 borderRadius: BorderRadius.circular(30),
 //               ),
 //               child: const Icon(Icons.check, color: Colors.white),

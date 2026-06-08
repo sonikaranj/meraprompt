@@ -131,7 +131,7 @@
 //                     color: Colors.white.withOpacity(0.08), // translucent fill
 //                     borderRadius: BorderRadius.circular(20),
 //                     border: Border.all(
-//                       color: Colors.deepPurpleAccent.withOpacity(0.1), // soft white border
+//                       color: Colors.blueAccent.withOpacity(0.1), // soft white border
 //                       width: 4
 //                     ),
 //                     boxShadow: [

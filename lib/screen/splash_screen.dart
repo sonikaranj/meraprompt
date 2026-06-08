@@ -1,30 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:ui' as ui;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:promptseen/Admob/Admob_service.dart';
+import 'package:promptseen/Admob/config_loader.dart';
 
 // Splash Screen Controller
 class SplashController extends GetxController {
   final progress = 0.0.obs;
   final statusText = 'INITIALIZING NEURAL CORE'.obs;
 
+  // Minimum time the splash stays on screen so it never "flashes" when the
+  // network/init is fast. Total splash time is now ~this value instead of a
+  // fixed ~3 seconds.
+  static const int _minSplashMs = 1200;
+
   @override
   void onInit() {
     super.onInit();
-    _animateProgress();
+    _startup();
   }
 
-  void _animateProgress() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+  Future<void> _startup() async {
+    final stopwatch = Stopwatch()..start();
 
-    for (int i = 0; i <= 100; i += 2) {
+    // Kick off the real startup work in parallel with the progress animation.
+    final initFuture = _initializeApp();
+
+    // Smoothly animate the bar up to 90% while initialization is happening.
+    for (int i = 0; i <= 90; i += 3) {
       progress.value = i / 100;
-
-      await Future.delayed(const Duration(milliseconds: 40));
+      await Future.delayed(const Duration(milliseconds: 12));
     }
 
-    // Navigate to home after splash completes
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Wait for the actual work to finish (already capped internally).
+    await initFuture;
+    progress.value = 1.0;
+
+    // Guarantee a minimum visible splash duration for a smooth feel.
+    final elapsed = stopwatch.elapsedMilliseconds;
+    if (elapsed < _minSplashMs) {
+      await Future.delayed(Duration(milliseconds: _minSplashMs - elapsed));
+    }
+
     Get.offNamed('/onboarding');
+  }
+
+  /// Performs the heavy startup work that used to block `main()`:
+  /// remote config fetch + ads initialization. Everything is wrapped so a
+  /// slow network or any error can never hang the splash screen.
+  Future<void> _initializeApp() async {
+    statusText.value = 'LOADING CONFIGURATION';
+    try {
+      // Cap the remote config fetch so the splash never waits too long.
+      await ConfigLoader.load().timeout(const Duration(seconds: 5));
+    } catch (_) {
+      // Proceed with defaults if config is slow/unavailable.
+    }
+
+    statusText.value = 'INITIALIZING NEURAL CORE';
+    try {
+      await MobileAds.instance.initialize();
+    } catch (_) {}
+
+    // Register the ad controller once config is ready so ad units resolve
+    // correctly. `permanent: true` keeps it alive across navigation — without
+    // it, GetX's SmartManagement disposes the controller when we leave the
+    // splash route, causing "AdController not found" later on Home.
+    if (!Get.isRegistered<AdController>()) {
+      Get.put(AdController(), permanent: true);
+    }
   }
 }
 
@@ -78,7 +123,7 @@ class SplashScreen extends GetView<SplashController> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFCFBCFF).withValues(alpha: 0.10),
+                      const Color(0xFFBAE6FD).withValues(alpha: 0.10),
                       const Color(0xFF0D0F1A).withValues(alpha: 0.0),
                     ],
                   ),
@@ -106,7 +151,7 @@ class SplashScreen extends GetView<SplashController> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFE7C365).withValues(alpha: 0.05),
+                      const Color(0xFF06B6D4).withValues(alpha: 0.05),
                       const Color(0xFF0D0F1A).withValues(alpha: 0.0),
                     ],
                   ),
@@ -148,7 +193,7 @@ class SplashScreen extends GetView<SplashController> {
                           borderRadius: BorderRadius.circular(20),
                           gradient: RadialGradient(
                             colors: [
-                              const Color(0xFFCFBCFF).withValues(alpha: 0.20),
+                              const Color(0xFFBAE6FD).withValues(alpha: 0.20),
                               const Color(0xFF0D0F1A).withValues(alpha: 0.0),
                             ],
                             stops: const [0.0, 1.0],
@@ -177,9 +222,9 @@ class SplashScreen extends GetView<SplashController> {
                         shaderCallback: (bounds) {
                           return const LinearGradient(
                             colors: [
-                              Color(0xFFCFBCFF), // primary
+                              Color(0xFFBAE6FD), // primary
                               Color(0xFFCDC0E9), // secondary
-                              Color(0xFFE7C365), // tertiary
+                              Color(0xFF06B6D4), // tertiary
                             ],
                             stops: [0.0, 0.5, 1.0],
                           ).createShader(bounds);
@@ -237,8 +282,8 @@ class SplashScreen extends GetView<SplashController> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF8B5CF6).withValues(alpha: 0.0),
-                                  const Color(0xFF8B5CF6),
+                                  const Color(0xFF3B82F6).withValues(alpha: 0.0),
+                                  const Color(0xFF3B82F6),
                                   const Color(0xFF3B82F6),
                                   const Color(0xFF3B82F6).withValues(alpha: 0.0),
                                 ],
@@ -247,7 +292,7 @@ class SplashScreen extends GetView<SplashController> {
                               borderRadius: BorderRadius.circular(2),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.6),
+                                  color: const Color(0xFF3B82F6).withValues(alpha: 0.6),
                                   blurRadius: 12,
                                   spreadRadius: 2,
                                 ),
@@ -353,7 +398,7 @@ class ParticlesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFCFBCFF).withValues(alpha: 0.1)
+      ..color = const Color(0xFFBAE6FD).withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     const particleSize = 40.0;

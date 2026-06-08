@@ -80,7 +80,7 @@ class ImagePreviewScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.image_not_supported,
-                      size: 80, color: Colors.deepPurpleAccent.withOpacity(0.5)),
+                      size: 80, color: Colors.blueAccent.withOpacity(0.5)),
                   SizedBox(height: 20),
                   Text(
                     'No Images Found',
@@ -144,7 +144,7 @@ class ImagePreviewScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.delete, color: Colors.deepPurpleAccent),
+              leading: Icon(Icons.delete, color: Colors.blueAccent),
               title: Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
@@ -206,7 +206,7 @@ class FullImageView extends StatelessWidget {
       content: Text("Are you sure you want to delete this image?",
           style: TextStyle(color: AppColor.white)),
       confirm: ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurpleAccent),
+        style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
         child: Text("Delete",style: TextStyle(color: Colors.white),),
         onPressed: () {
           controller.deleteImage(file);

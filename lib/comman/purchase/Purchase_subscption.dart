@@ -34,7 +34,7 @@
 //   static const Color _bgMid = Color(0xFF0D0F2C);
 //   static const Color _bgBottom = Color(0xFF050511);
 //
-//   static const Color _accentA = Color(0xFF7C3AED); // purple
+//   static const Color _accentA = Color(0xFF2563EB); // purple
 //   static const Color _accentB = Color(0xFF22D3EE); // cyan
 //   static const Color _accentPink = Color(0xFFEC4899);
 //   static const Color _textMuted = Color(0xFF9AA4B2);

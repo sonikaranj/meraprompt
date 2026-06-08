@@ -5,11 +5,11 @@
 //   const ProfileScreen({super.key});
 //
 //   // Color Palette from Splash Screen
-//   static const Color primaryGradient1 = Color(0xFF9B59B6); // Purple
+//   static const Color primaryGradient1 = Color(0xFF0EA5E9); // Purple
 //   static const Color primaryGradient2 = Color(0xFF00BCD4); // Cyan
 //   static const Color darkBg = Color(0xFF0a0604);
 //   static const Color darkCardBg = Color(0xFF14100D);
-//   static const Color accentOrange = Color(0xFFec5b13);
+//   static const Color accentOrange = Color(0xFF2563EB);
 //
 //   @override
 //   Widget build(BuildContext context) {
@@ -21,8 +21,8 @@
 //             begin: Alignment.topCenter,
 //             end: Alignment.bottomCenter,
 //             colors: [
-//               const Color(0xFF1a0f0a),
-//               const Color(0xFF0f0a05),
+//               const Color(0xFF0A0E1A),
+//               const Color(0xFF060A14),
 //               darkBg,
 //             ],
 //           ),
@@ -104,8 +104,8 @@
 //           begin: Alignment.topCenter,
 //           end: Alignment.bottomCenter,
 //           colors: [
-//             const Color(0xFF1a0f0a),
-//             const Color(0xFF0f0a05).withOpacity(0.8),
+//             const Color(0xFF0A0E1A),
+//             const Color(0xFF060A14).withOpacity(0.8),
 //             Colors.transparent,
 //           ],
 //         ),

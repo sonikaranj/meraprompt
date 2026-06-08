@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:promptseen/Admob/Admob_service.dart';
+import 'package:promptseen/Admob/app_config.dart';
 import 'package:promptseen/controller/detail_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,9 +14,9 @@ class DetailScreen extends GetView<DetailController> {
   static const Color _bgDeep      = Color(0xFF0D0E1A);
   static const Color _bgCard      = Color(0xFF13152B);
   static const Color _bgCardLight = Color(0xFF1A1D35);
-  static const Color _purple      = Color(0xFFAA6EE8);
+  static const Color _purple      = Color(0xFF38BDF8);
   static const Color _teal        = Color(0xFF3EC6C6);
-  static const Color _purpleLight = Color(0xFFCC99FF);
+  static const Color _purpleLight = Color(0xFF93C5FD);
   static const Color _borderColor = Color(0xFF2A2D4A);
 
   @override
@@ -50,13 +53,31 @@ class DetailScreen extends GetView<DetailController> {
               ),
 
               CustomScrollView(
+                controller: controller.scrollController,
                 slivers: [
                   // ── AppBar ───────────────────────────────────────
                   SliverAppBar(
                     backgroundColor: _bgDeep,
                     elevation: 0,
+                    automaticallyImplyLeading: false,
+                    leadingWidth: 56,
                     leading: GestureDetector(
-                      onTap: () => Get.back(),
+                      // opaque = poora box tappable, margin/transparent area me
+                      // taps fall-through nahi honge.
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        // Get.back() andar se closeCurrentSnackbar() call karta
+                        // hai, jo unlock-snackbar animate hote waqt
+                        // LateInitializationError crash deta hai (GetX bug).
+                        // Isliye seedha Navigator se pop karo — snackbar ko
+                        // bina chhede route safely band ho jata hai.
+                        final nav = Navigator.of(context);
+                        if (nav.canPop()) {
+                          nav.pop();
+                        } else {
+                          Get.offAllNamed('/home');
+                        }
+                      },
                       child: Container(
                         margin: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -103,7 +124,7 @@ class DetailScreen extends GetView<DetailController> {
                             PopupMenuItem(
                               onTap: () => _showReportDialog(context),
                               child: Row(children: const [
-                                Icon(Icons.flag, color: Color(0xFFFF6B9D)),
+                                Icon(Icons.flag, color: Color(0xFF06B6D4)),
                                 SizedBox(width: 12),
                                 Text('Report Prompt',
                                     style:
@@ -135,23 +156,46 @@ class DetailScreen extends GetView<DetailController> {
                     ),
                   ),
 
-                  // ── Prompt Card with typing animation ────────────
+                  // ── Prompt Card (locked / unlocked) ──────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: _TypingPromptCard(
-                        promptText: controller.prompt.promptText,
-                        onCopy: () => controller.copyPrompt(),
-                      ),
+                      // key = prompt.id taaki prompt badalne par card fresh
+                      // bane (typing animation dobara chale, content update ho).
+                      child: controller.isUnlocked
+                          ? _TypingPromptCard(
+                              key: ValueKey('typing_${controller.prompt.id}'),
+                              promptText: controller.prompt.promptText,
+                              onCopy: () => controller.copyPrompt(),
+                            )
+                          : _LockedPromptCard(
+                              key: ValueKey('locked_${controller.prompt.id}'),
+                              promptText: controller.prompt.promptText,
+                              onUnlock: () => controller.unlockPrompt(),
+                            ),
                     ),
                   ),
 
-                  // ── Send to AI Buttons ───────────────────────────
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                      child: _buildSendButtons(controller),
+                  // ── Send to AI Buttons (sirf unlock hone par) ────
+                  if (controller.isUnlocked)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                        child: _buildSendButtons(controller),
+                      ),
                     ),
+
+                  // ── MREC / banner ad (self-contained) ────────────
+                  SliverToBoxAdapter(
+                    child: MrecAdBox(
+                      adUnitId: AppConfig.mrecAdUnitId,
+                      margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    ),
+                  ),
+
+                  // ── More Prompts ─────────────────────────────────
+                  SliverToBoxAdapter(
+                    child: _MorePromptsSection(controller: controller),
                   ),
 
                   const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -185,12 +229,12 @@ class DetailScreen extends GetView<DetailController> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFF6B9D).withOpacity(0.15),
+                      color: const Color(0xFF06B6D4).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
                       Icons.flag_rounded,
-                      color: Color(0xFFFF6B9D),
+                      color: Color(0xFF06B6D4),
                       size: 24,
                     ),
                   ),
@@ -265,7 +309,8 @@ class DetailScreen extends GetView<DetailController> {
                   // Cancel button
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => Get.back(),
+                      // Navigator.pop = dialog band (Get.back snackbar crash se bacho)
+                      onTap: () => Navigator.of(context).pop(),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
@@ -306,8 +351,8 @@ class DetailScreen extends GetView<DetailController> {
                           return;
                         }
 
-                        // Close dialog
-                        Get.back();
+                        // Close dialog (Navigator.pop = Get.back snackbar crash se bacho)
+                        Navigator.of(context).pop();
 
                         // Show success message directly
                         _showReportSuccessMessage();
@@ -319,12 +364,12 @@ class DetailScreen extends GetView<DetailController> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFFFF6B9D), Color(0xFFFF8FAE)],
+                            colors: [Color(0xFF06B6D4), Color(0xFFFF8FAE)],
                           ),
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFF6B9D).withOpacity(0.3),
+                              color: const Color(0xFF06B6D4).withOpacity(0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -367,12 +412,12 @@ class DetailScreen extends GetView<DetailController> {
       icon: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFFFF6B9D).withOpacity(0.2),
+          color: const Color(0xFF06B6D4).withOpacity(0.2),
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Icon(
           Icons.check_circle_rounded,
-          color: Color(0xFFFF6B9D),
+          color: Color(0xFF06B6D4),
           size: 24,
         ),
       ),
@@ -482,7 +527,7 @@ class DetailScreen extends GetView<DetailController> {
                         ? Icons.favorite
                         : Icons.favorite_border,
                     color: controller.isFavorite
-                        ? const Color(0xFFFF6B9D)
+                        ? const Color(0xFF06B6D4)
                         : Colors.white,
                     size: 16,
                   ),
@@ -600,6 +645,7 @@ class _TypingPromptCard extends StatefulWidget {
   final VoidCallback onCopy;
 
   const _TypingPromptCard({
+    super.key,
     required this.promptText,
     required this.onCopy,
   });
@@ -613,9 +659,9 @@ class _TypingPromptCardState extends State<_TypingPromptCard>
 
   static const Color _bgCard      = Color(0xFF13152B);
   static const Color _bgCardLight = Color(0xFF1A1D35);
-  static const Color _purple      = Color(0xFFAA6EE8);
+  static const Color _purple      = Color(0xFF38BDF8);
   static const Color _teal        = Color(0xFF3EC6C6);
-  static const Color _purpleLight = Color(0xFFCC99FF);
+  static const Color _purpleLight = Color(0xFF93C5FD);
 
   String _displayed  = '';
   int    _charIndex  = 0;
@@ -1070,8 +1116,260 @@ class _PulsingDotState extends State<_PulsingDot>
         width: 7, height: 7,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: Color(0xFFAA6EE8),
+          color: Color(0xFF38BDF8),
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCKED PROMPT CARD — blurred preview + "Unlock Prompt" (watch ad) button
+// ─────────────────────────────────────────────────────────────────────────────
+class _LockedPromptCard extends StatelessWidget {
+  final String promptText;
+  final VoidCallback onUnlock;
+
+  const _LockedPromptCard({
+    super.key,
+    required this.promptText,
+    required this.onUnlock,
+  });
+
+  static const Color _bgCard = Color(0xFF13152B);
+  static const Color _border = Color(0xFF2A2D4A);
+  static const Color _purple = Color(0xFF38BDF8);
+  static const Color _purpleLight = Color(0xFF93C5FD);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _bgCard,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _border),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // Blurred preview of the prompt text (teaser behind the lock).
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    promptText.isEmpty
+                        ? 'This prompt is locked. Unlock to reveal the full prompt text and send it to your favourite AI tools.'
+                        : promptText,
+                    maxLines: 6,
+                    overflow: TextOverflow.fade,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      height: 1.6,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Lock overlay + unlock button.
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  _bgCard.withOpacity(0.65),
+                  _bgCard.withOpacity(0.92),
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _purple.withOpacity(0.15),
+                    border: Border.all(color: _purple.withOpacity(0.4)),
+                  ),
+                  child: const Icon(Icons.lock_rounded,
+                      color: _purpleLight, size: 28),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Prompt Locked',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Ek chhota ad dekho aur ye prompt unlock karo',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: onUnlock,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _purple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
+                    ),
+                    icon: const Icon(Icons.play_circle_fill_rounded, size: 22),
+                    label: const Text(
+                      'Unlock Prompt',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MORE PROMPTS — detail ke neeche horizontal list (same screen me khulti hai)
+// ─────────────────────────────────────────────────────────────────────────────
+class _MorePromptsSection extends StatelessWidget {
+  final DetailController controller;
+
+  const _MorePromptsSection({required this.controller});
+
+  static const Color _bgCard = Color(0xFF13152B);
+  static const Color _border = Color(0xFF2A2D4A);
+  static const Color _purple = Color(0xFF38BDF8);
+
+  @override
+  Widget build(BuildContext context) {
+    final items = controller.morePrompts;
+    if (items.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Heading
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Icon(Icons.auto_awesome, color: _purple, size: 18),
+                SizedBox(width: 8),
+                Text(
+                  'More Prompts',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Horizontal list
+          SizedBox(
+            height: 200,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (ctx, i) {
+                final p = items[i];
+                return GestureDetector(
+                  onTap: () => controller.openPrompt(p),
+                  child: SizedBox(
+                    width: 140,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            width: 140,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: _bgCard,
+                              border: Border.all(color: _border),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: p.imageUrl.isEmpty
+                                ? const Icon(Icons.image_outlined,
+                                    color: Colors.white24, size: 32)
+                                : CachedNetworkImage(
+                                    imageUrl: p.imageUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder: (c, u) => const Center(
+                                      child: SizedBox(
+                                        width: 22,
+                                        height: 22,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation(_purple),
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (c, u, e) => const Icon(
+                                        Icons.broken_image_outlined,
+                                        color: Colors.white24,
+                                        size: 32),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          p.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            height: 1.25,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

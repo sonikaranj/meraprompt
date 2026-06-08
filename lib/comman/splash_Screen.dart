@@ -262,8 +262,8 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFF6C0DF2).withOpacity(0.2),
-                            const Color(0xFF6C0DF2).withOpacity(0.0),
+                            const Color(0xFF2563EB).withOpacity(0.2),
+                            const Color(0xFF2563EB).withOpacity(0.0),
                           ],
                         ),
                       ),
@@ -299,7 +299,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
               Positioned.fill(
                 child: CustomPaint(
                   painter: _TranscriptionGridPainter(
-                    const Color(0xFF6C0DF2).withOpacity(0.08),
+                    const Color(0xFF2563EB).withOpacity(0.08),
                   ),
                 ),
               ),
@@ -325,18 +325,18 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF6C0DF2).withOpacity(0.3),
+                                  const Color(0xFF2563EB).withOpacity(0.3),
                                   const Color(0xFF2DD4BF).withOpacity(0.3),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                                color: const Color(0xFF6C0DF2).withOpacity(0.5),
+                                color: const Color(0xFF2563EB).withOpacity(0.5),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF6C0DF2).withOpacity(0.3),
+                                  color: const Color(0xFF2563EB).withOpacity(0.3),
                                   blurRadius: 20,
                                   spreadRadius: 2,
                                 ),
@@ -400,10 +400,10 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                                   ),
                                   gradient: SweepGradient(
                                     colors: [
-                                      const Color(0xFF6C0DF2).withOpacity(0.8),
+                                      const Color(0xFF2563EB).withOpacity(0.8),
                                       const Color(0xFF2DD4BF).withOpacity(0.8),
-                                      const Color(0xFF8B3EFF).withOpacity(0.8),
-                                      const Color(0xFF6C0DF2).withOpacity(0.8),
+                                      const Color(0xFF3B82F6).withOpacity(0.8),
+                                      const Color(0xFF2563EB).withOpacity(0.8),
                                     ],
                                     stops: const [0.0, 0.33, 0.66, 1.0],
                                   ),
@@ -426,7 +426,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                                   shape: BoxShape.circle,
                                   gradient: RadialGradient(
                                     colors: [
-                                      const Color(0xFF6C0DF2).withOpacity(0.3),
+                                      const Color(0xFF2563EB).withOpacity(0.3),
                                       Colors.transparent,
                                     ],
                                   ),
@@ -446,7 +446,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                               child: CustomPaint(
                                 painter: _AudioWavePainter(
                                   _wave.value,
-                                  const Color(0xFF6C0DF2),
+                                  const Color(0xFF2563EB),
                                   const Color(0xFF2DD4BF),
                                 ),
                               ),
@@ -464,14 +464,14 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Color(0xFF6C0DF2),
-                                Color(0xFF8B3EFF),
+                                Color(0xFF2563EB),
+                                Color(0xFF3B82F6),
                                 Color(0xFF2DD4BF),
                               ],
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF6C0DF2).withOpacity(0.6),
+                                color: const Color(0xFF2563EB).withOpacity(0.6),
                                 blurRadius: 40,
                                 spreadRadius: 10,
                               ),
@@ -490,7 +490,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                           _particle,
                           Icons.video_library_rounded,
                           'Video',
-                          const Color(0xFF6C0DF2),
+                          const Color(0xFF2563EB),
                           left: -120,
                           top: -20,
                         ),
@@ -509,7 +509,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                           _particle,
                           Icons.image_rounded,
                           'Image',
-                          const Color(0xFF8B3EFF),
+                          const Color(0xFF3B82F6),
                           left: -100,
                           bottom: -40,
                           delay: 0.66,
@@ -524,7 +524,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                       shaderCallback: (bounds) => const LinearGradient(
                         colors: [
                           Colors.white,
-                          Color(0xFF6C0DF2),
+                          Color(0xFF2563EB),
                           Color(0xFF2DD4BF),
                         ],
                       ).createShader(bounds),
@@ -565,7 +565,7 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                         color: Colors.white.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: const Color(0xFF6C0DF2).withOpacity(0.3),
+                          color: const Color(0xFF2563EB).withOpacity(0.3),
                           width: 1,
                         ),
                       ),
@@ -579,15 +579,15 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
-                                    Color(0xFF6C0DF2),
-                                    Color(0xFF8B3EFF),
+                                    Color(0xFF2563EB),
+                                    Color(0xFF3B82F6),
                                     Color(0xFF2DD4BF),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF6C0DF2).withOpacity(0.6),
+                                    color: const Color(0xFF2563EB).withOpacity(0.6),
                                     blurRadius: 15,
                                     spreadRadius: 2,
                                   ),
@@ -732,13 +732,13 @@ class _TranscriptionAISplashState extends State<TranscriptionAISplash>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF6C0DF2).withOpacity(0.8),
+                      const Color(0xFF2563EB).withOpacity(0.8),
                       const Color(0xFF2DD4BF).withOpacity(0.4),
                     ],
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF6C0DF2).withOpacity(0.5),
+                      color: const Color(0xFF2563EB).withOpacity(0.5),
                       blurRadius: 8,
                       spreadRadius: 1,
                     ),

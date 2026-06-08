@@ -25,9 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   static const Color _bgDeep      = Color(0xFF0D0E1A);
   static const Color _bgCard      = Color(0xFF13152B);
   static const Color _bgCardLight = Color(0xFF1A1D35);
-  static const Color _purple      = Color(0xFFAA6EE8);
+  static const Color _purple      = Color(0xFF38BDF8);
   static const Color _teal        = Color(0xFF3EC6C6);
-  static const Color _purpleLight = Color(0xFFCC99FF);
+  static const Color _purpleLight = Color(0xFF93C5FD);
   static const Color _borderColor = Color(0xFF2A2D4A);
 
   late AnimationController _fadeController;
@@ -340,7 +340,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                           }),
                       _buildMenuTile(icon: Icons.mail_rounded, title: 'Contact Support',
-                          subtitle: 'Get help & feedback', accentColor: const Color(0xFFFF6B9D),
+                          subtitle: 'Get help & feedback', accentColor: const Color(0xFF06B6D4),
                           onTap: _launchEmail),
                       _buildSectionHeader('About'),
                       Container(

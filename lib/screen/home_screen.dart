@@ -13,7 +13,7 @@ class HomeScreen extends GetView<HomeController> {
   static bool _popupCheckedThisSession = false;
 
   // ─── Brand Palette ───────────────────────────────────────────────
-  static const Color _c1 = Color(0xFF9B59B6);  // purple
+  static const Color _c1 = Color(0xFF0EA5E9);  // purple
   static const Color _c2 = Color(0xFF00BCD4);  // cyan
   static const Color _bg = Color(0xFF080C18);  // deep navy
   static const Color _surface = Color(0xFF0F1422);
@@ -44,7 +44,8 @@ class HomeScreen extends GetView<HomeController> {
         body: SafeArea(
           child: GetBuilder<HomeController>(
             builder: (ctrl) {
-              _showConfigPopupIfNeeded();
+              // Announcement popup disabled.
+              // _showConfigPopupIfNeeded();
               return CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -58,6 +59,13 @@ class HomeScreen extends GetView<HomeController> {
                   SliverToBoxAdapter(child: _SearchBar(ctrl: ctrl)),
                   SliverToBoxAdapter(child: _CategoryPills(ctrl: ctrl)),
                   SliverToBoxAdapter(child: _CommunityCard(screen: this)),
+                  // MREC / banner ad (self-contained, own lifecycle).
+                  SliverToBoxAdapter(
+                    child: MrecAdBox(
+                      adUnitId: AppConfig.mrecAdUnitId,
+                      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    ),
+                  ),
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                     sliver: _PromptsGrid(ctrl: ctrl, screen: this),
@@ -892,35 +900,11 @@ class _PromptsGrid extends StatefulWidget {
 }
 
 class _PromptsGridState extends State<_PromptsGrid> {
-  // Lazy loading variables
-  late ScrollController _scrollController;
-  int _visibleCount = 10; // Initially load 10 items
-  static const int _itemsPerBatch = 10; // Load 10 more items per scroll
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    // Load more items when user scrolls near the bottom
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.8) {
-      setState(() {
-        _visibleCount = (_visibleCount + _itemsPerBatch)
-            .clamp(0, widget.ctrl.getFilteredPrompts().length);
-      });
-    }
-  }
+  // NOTE: Pehle yahan ek alag ScrollController se manual "lazy load" tha, par
+  // wo controller parent CustomScrollView se attached na hone ki wajah se kabhi
+  // fire nahi hota tha — isliye sirf 10 prompts dikhte the aur niche ek stuck
+  // loading spinner aata tha. SliverGrid khud hi sirf visible cells build karta
+  // hai, to ab seedha saari prompts render karte hain.
 
   @override
   Widget build(BuildContext context) {
@@ -954,7 +938,6 @@ class _PromptsGridState extends State<_PromptsGrid> {
     }
 
     final prompts = widget.ctrl.getFilteredPrompts();
-    final visiblePrompts = prompts.take(_visibleCount).toList();
 
     if (prompts.isEmpty) {
       return SliverFillRemaining(
@@ -1013,30 +996,12 @@ class _PromptsGridState extends State<_PromptsGrid> {
         mainAxisSpacing: 12,
       ),
       delegate: SliverChildBuilderDelegate(
-            (ctx, i) {
-          // Show loading indicator for upcoming items
-          if (i >= visiblePrompts.length) {
-            return const Center(
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor:
-                  AlwaysStoppedAnimation(HomeScreen._c2),
-                ),
-              ),
-            );
-          }
-
-          return _PromptCard(
-            prompt: visiblePrompts[i],
-            ctrl: widget.ctrl,
-            screen: widget.screen,
-          );
-        },
-        childCount: visiblePrompts.length +
-            (visiblePrompts.length < prompts.length ? 1 : 0),
+            (ctx, i) => _PromptCard(
+          prompt: prompts[i],
+          ctrl: widget.ctrl,
+          screen: widget.screen,
+        ),
+        childCount: prompts.length,
       ),
     );
   }
@@ -1062,9 +1027,16 @@ class _PromptCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        final AdController adController = Get.find();
-        adController.showInterstitialAd();
-        Get.toNamed('/detail', arguments: prompt);
+        // Show the interstitial (with a loading overlay until it's ready),
+        // then navigate. If the controller isn't ready or ads are disabled,
+        // navigate straight away — a tap can never get stuck or crash.
+        if (Get.isRegistered<AdController>()) {
+          Get.find<AdController>().showInterstitialAdWithLoading(
+            onComplete: () => Get.toNamed('/detail', arguments: prompt),
+          );
+        } else {
+          Get.toNamed('/detail', arguments: prompt);
+        }
       },
       child: Container(
         decoration: BoxDecoration(
