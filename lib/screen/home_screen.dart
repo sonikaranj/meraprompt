@@ -246,7 +246,7 @@ class _AnnouncementDialog extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'From PromptMera',
+                              'From MK EDIT',
                               style: TextStyle(
                                 color: Color(0xFF6B7280),
                                 fontSize: 12,
@@ -436,7 +436,7 @@ class _Header extends StatelessWidget {
                     shaderCallback: (bounds) =>
                         HomeScreen._brandGrad.createShader(bounds),
                     child: const Text(
-                      'PromptMera',
+                      'MK EDIT',
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w900,
@@ -447,8 +447,8 @@ class _Header extends StatelessWidget {
                   ),
                   Text(
                     ctrl.showFavoritesOnly
-                        ? '${ctrl.favorites.length} Saved prompts'
-                        : 'Smart AI Prompts',
+                        ? '${ctrl.favorites.length} Saved edits'
+                        : 'AI Photo Editing',
                     style: const TextStyle(
                       fontSize: 12,
                       color: Color(0xFF6B7280),
@@ -988,6 +988,41 @@ class _PromptsGridState extends State<_PromptsGrid> {
       );
     }
 
+    // Har 10 photos ke baad ek banner ad dikhane ke liye grid ko 10-10 ke
+    // chunks me tod kar, har chunk ke beech me ek MrecAdBox insert karte hain.
+    const int adInterval = 10;
+
+    if (AppConfig.bannerAdUnitId.trim().isEmpty ||
+        prompts.length <= adInterval) {
+      return _buildGrid(prompts, 0);
+    }
+
+    final slivers = <Widget>[];
+    for (var start = 0; start < prompts.length; start += adInterval) {
+      final end = (start + adInterval) > prompts.length
+          ? prompts.length
+          : start + adInterval;
+      slivers.add(_buildGrid(prompts.sublist(start, end), start));
+
+      // Banner sirf tab jab is chunk ke baad aur prompts bachi ho.
+      if (end < prompts.length) {
+        slivers.add(
+          SliverToBoxAdapter(
+            child: MrecAdBox(
+              adUnitId: AppConfig.bannerAdUnitId,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
+        );
+      }
+    }
+
+    return SliverMainAxisGroup(slivers: slivers);
+  }
+
+  // Ek 2-column grid jo [items] render karta hai. [keyOffset] se har chunk ke
+  // cards ko unique keys milti hain taaki rebuild par state na mile.
+  Widget _buildGrid(List<dynamic> items, int keyOffset) {
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -997,11 +1032,12 @@ class _PromptsGridState extends State<_PromptsGrid> {
       ),
       delegate: SliverChildBuilderDelegate(
             (ctx, i) => _PromptCard(
-          prompt: prompts[i],
+          key: ValueKey('prompt_${keyOffset + i}'),
+          prompt: items[i],
           ctrl: widget.ctrl,
           screen: widget.screen,
         ),
-        childCount: prompts.length,
+        childCount: items.length,
       ),
     );
   }
@@ -1016,10 +1052,11 @@ class _PromptCard extends StatelessWidget {
   final HomeScreen screen;
 
   const _PromptCard({
+    Key? key,
     required this.prompt,
     required this.ctrl,
     required this.screen,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

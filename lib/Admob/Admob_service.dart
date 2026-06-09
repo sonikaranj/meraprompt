@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:promptseen/Admob/app_config.dart';
 
+import 'app_config.dart';
+
 
 /// =====================
 /// AD UNIT IDS

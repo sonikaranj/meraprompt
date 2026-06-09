@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:promptseen/Admob/Admob_service.dart';
 import 'package:promptseen/Admob/app_config.dart';
 import 'package:promptseen/controller/detail_controller.dart';
+import 'package:promptseen/service/review_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailScreen extends GetView<DetailController> {
@@ -131,6 +132,16 @@ class DetailScreen extends GetView<DetailController> {
                                     TextStyle(color: Colors.white)),
                               ]),
                             ),
+                            PopupMenuItem(
+                              onTap: () => _showRateAppDialog(context),
+                              child: Row(children: const [
+                                Icon(Icons.star_rounded, color: Color(0xFFFFD700)),
+                                SizedBox(width: 12),
+                                Text('Rate App',
+                                    style:
+                                    TextStyle(color: Colors.white)),
+                              ]),
+                            ),
                           ],
                         ),
                         child: Container(
@@ -153,6 +164,22 @@ class DetailScreen extends GetView<DetailController> {
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: _buildMainImage(controller),
+                    ),
+                  ),
+
+                  // ── Prompt Stats & Metadata ──────────────────────
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      child: _buildPromptMetadata(controller),
+                    ),
+                  ),
+
+                  // ── Tags Section ─────────────────────────────────
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                      child: _buildTagsSection(),
                     ),
                   ),
 
@@ -398,6 +425,189 @@ class DetailScreen extends GetView<DetailController> {
     );
   }
 
+  // ── Rate App Dialog ──────────────────────────────────────────────────────
+
+  void _showRateAppDialog(BuildContext context) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: _bgCardLight,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFD700).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.star_rounded,
+                  color: Color(0xFFFFD700),
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Title
+              const Text(
+                'Love MK EDIT?',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // Description
+              Text(
+                'Rate our app and help us improve!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[400],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Rating Stars
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildStarButton(1),
+                  const SizedBox(width: 8),
+                  _buildStarButton(2),
+                  const SizedBox(width: 8),
+                  _buildStarButton(3),
+                  const SizedBox(width: 8),
+                  _buildStarButton(4),
+                  const SizedBox(width: 8),
+                  _buildStarButton(5),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Buttons
+              Row(
+                children: [
+                  // Cancel
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _bgCard,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _purple.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Later',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Rate Now
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _rateAppNow();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFFFD700).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Rate Now',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  Widget _buildStarButton(int rating) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(Get.context!).pop();
+        _rateAppNow();
+      },
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _bgCard,
+          border: Border.all(
+            color: _purple.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            '$rating',
+            style: const TextStyle(
+              color: Color(0xFFFFD700),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _rateAppNow() async {
+    final reviewService = ReviewService();
+    await reviewService.requestReview();
+  }
+
   void _showReportSuccessMessage() {
     Get.snackbar(
       'Report Submitted ✓',
@@ -422,6 +632,251 @@ class DetailScreen extends GetView<DetailController> {
         ),
       ),
       shouldIconPulse: true,
+    );
+  }
+
+  // ── Tags Section ──────────────────────────────────────────────────────────
+
+  Widget _buildTagsSection() {
+    final tags = ['AI', 'Image', 'Creative', 'Editing', 'Photo'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Tags',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: tags
+              .map(
+                (tag) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _bgCard,
+                    border: Border.all(
+                      color: _teal.withOpacity(0.3),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '#$tag',
+                    style: const TextStyle(
+                      color: _teal,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.1,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  // ── Prompt Metadata & Stats ───────────────────────────────────────────────
+
+  Widget _buildPromptMetadata(DetailController controller) {
+    final prompt = controller.prompt;
+    return Column(
+      children: [
+        // Category, Difficulty, Stats Row
+        Row(
+          children: [
+            // Category Badge
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF38BDF8), Color(0xFF3EC6C6)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _purple.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.label_rounded,
+                        color: Colors.white, size: 16),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        prompt.categoryName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            // Difficulty Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: _bgCard,
+                border: Border.all(color: _teal.withOpacity(0.4), width: 1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.trending_up,
+                      color: _teal, size: 16),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'Easy',
+                    style: TextStyle(
+                      color: _teal,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Stats Row: Views, Favorites, Copy Button
+        Row(
+          children: [
+            // Views stat
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: _bgCard,
+                  border: Border.all(color: _borderColor, width: 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '2.5K',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Views',
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Favorites stat
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: _bgCard,
+                  border: Border.all(color: _borderColor, width: 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '486',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Saved',
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Quick Copy Button
+            GestureDetector(
+              onTap: () => controller.copyPrompt(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      _purple.withOpacity(0.6),
+                      _teal.withOpacity(0.4),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Border.all(
+                    color: _purple.withOpacity(0.3),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.content_copy_rounded,
+                        color: Colors.white, size: 16),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Copy',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1278,19 +1733,34 @@ class _MorePromptsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Heading
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
+          // Heading with subtitle
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.auto_awesome, color: _purple, size: 18),
-                SizedBox(width: 8),
+                Row(
+                  children: const [
+                    Icon(Icons.auto_awesome, color: _purple, size: 18),
+                    SizedBox(width: 8),
+                    Text(
+                      'Related Prompts',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
                 Text(
-                  'More Prompts',
+                  'Similar prompts in this category',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
+                    color: Colors.grey[500],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -1315,40 +1785,75 @@ class _MorePromptsSection extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Container(
-                            width: 140,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              color: _bgCard,
-                              border: Border.all(color: _border),
+                        Stack(
+                          children: [
+                            ClipRRect(
                               borderRadius: BorderRadius.circular(14),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: p.imageUrl.isEmpty
-                                ? const Icon(Icons.image_outlined,
-                                    color: Colors.white24, size: 32)
-                                : CachedNetworkImage(
-                                    imageUrl: p.imageUrl,
-                                    fit: BoxFit.cover,
-                                    placeholder: (c, u) => const Center(
-                                      child: SizedBox(
-                                        width: 22,
-                                        height: 22,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation(_purple),
+                              child: Container(
+                                width: 140,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  color: _bgCard,
+                                  border: Border.all(color: _border),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: p.imageUrl.isEmpty
+                                    ? const Icon(Icons.image_outlined,
+                                        color: Colors.white24, size: 32)
+                                    : CachedNetworkImage(
+                                        imageUrl: p.imageUrl,
+                                        fit: BoxFit.cover,
+                                        placeholder: (c, u) => const Center(
+                                          child: SizedBox(
+                                            width: 22,
+                                            height: 22,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(_purple),
+                                            ),
+                                          ),
                                         ),
+                                        errorWidget: (c, u, e) => const Icon(
+                                            Icons.broken_image_outlined,
+                                            color: Colors.white24,
+                                            size: 32),
+                                      ),
+                              ),
+                            ),
+                            // Rating badge
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.star_rounded,
+                                        color: Color(0xFFFFD700), size: 12),
+                                    SizedBox(width: 2),
+                                    Text(
+                                      '4.8',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                    errorWidget: (c, u, e) => const Icon(
-                                        Icons.broken_image_outlined,
-                                        color: Colors.white24,
-                                        size: 32),
-                                  ),
-                          ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         Text(

@@ -230,7 +230,7 @@ class SplashScreen extends GetView<SplashController> {
                           ).createShader(bounds);
                         },
                         child: Text(
-                          'PromptMera',
+                          'MK EDIT',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 48,
@@ -246,7 +246,7 @@ class SplashScreen extends GetView<SplashController> {
 
                       // Subtitle
                       const Text(
-                        'Smart AI Prompts for Unlimited Creativity',
+                        'AI-Powered Photo Editing at Your Fingertips',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF9CA3AF),

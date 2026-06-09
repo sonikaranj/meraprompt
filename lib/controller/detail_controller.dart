@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:promptseen/Admob/Admob_service.dart';
 import 'package:promptseen/controller/home_screen_controller.dart';
+import 'package:promptseen/service/review_service.dart';
 import 'package:share_plus/share_plus.dart';
 
 
@@ -116,6 +117,10 @@ class DetailController extends GetxController {
       snackPosition: SnackPosition.BOTTOM,
       duration: const Duration(seconds: 2),
     );
+
+    // Track unlock aur review request karo agar time ho gaya
+    final reviewService = ReviewService();
+    reviewService.trackPromptUnlock(prompt.id);
   }
 
   void copyPrompt() {
