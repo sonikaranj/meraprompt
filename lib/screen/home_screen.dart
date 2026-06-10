@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:promptseen/Admob/Admob_service.dart';
 import 'package:promptseen/Admob/app_config.dart';
 import 'package:promptseen/controller/home_screen_controller.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -988,32 +989,47 @@ class _PromptsGridState extends State<_PromptsGrid> {
       );
     }
 
-    // Har 10 photos ke baad ek banner ad dikhane ke liye grid ko 10-10 ke
-    // chunks me tod kar, har chunk ke beech me ek MrecAdBox insert karte hain.
+    // Har 10 photos ke baad ek ad dikhane ke liye grid ko 10-10 ke chunks me
+    // tod kar, har chunk ke beech me ad insert karte hain. Native aur MREC
+    // alternate hote hain — native content jaisa blend hota he isliye uska
+    // eCPM zyada he; pehla slot native ko milta he.
     const int adInterval = 10;
 
-    if (AppConfig.bannerAdUnitId.trim().isEmpty ||
+    final bannerId = AppConfig.bannerAdUnitId.trim();
+    final nativeId = AppConfig.nativeAdUnitId.trim();
+
+    if ((bannerId.isEmpty && nativeId.isEmpty) ||
         prompts.length <= adInterval) {
       return _buildGrid(prompts, 0);
     }
 
     final slivers = <Widget>[];
+    var adSlot = 0;
     for (var start = 0; start < prompts.length; start += adInterval) {
       final end = (start + adInterval) > prompts.length
           ? prompts.length
           : start + adInterval;
       slivers.add(_buildGrid(prompts.sublist(start, end), start));
 
-      // Banner sirf tab jab is chunk ke baad aur prompts bachi ho.
+      // Ad sirf tab jab is chunk ke baad aur prompts bachi ho.
       if (end < prompts.length) {
+        final useNative =
+            nativeId.isNotEmpty && (adSlot.isEven || bannerId.isEmpty);
         slivers.add(
           SliverToBoxAdapter(
-            child: MrecAdBox(
-              adUnitId: AppConfig.bannerAdUnitId,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-            ),
+            child: useNative
+                ? NativeAdBox(
+                    adUnitId: nativeId,
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 4),
+                  )
+                : MrecAdBox(
+                    adUnitId: bannerId,
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                  ),
           ),
         );
+        adSlot++;
       }
     }
 
@@ -1294,36 +1310,16 @@ class _EnhancedCachedNetworkImage extends StatelessWidget {
     );
   }
 
-  // Placeholder while image loads
+  // Placeholder while image loads — shimmer spinner se zyada premium lagta
+  // he aur grid me 10 spinners ek saath ghoomne ki bajaye smooth wave dikhti he.
   Widget _buildLoadingPlaceholder() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: HomeScreen._card,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor:
-                AlwaysStoppedAnimation(HomeScreen._c2.withOpacity(0.6)),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Loading...',
-              style: TextStyle(
-                color: HomeScreen._c2.withOpacity(0.5),
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
+    return Shimmer.fromColors(
+      baseColor: HomeScreen._card,
+      highlightColor: const Color(0xFF252A45),
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: HomeScreen._card,
       ),
     );
   }

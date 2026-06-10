@@ -2,13 +2,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
-    <uses-permission android:name="android.permission.READ_LOGS"/>
-    <!-- Facebook Permissions -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!-- AppLovin Permissions -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:label="MK EDIT – AI Photo Editing"
         android:name="${applicationName}"
@@ -19,15 +13,11 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1934817782278255~8567667997"/>
 
-        <!-- Facebook App ID -->
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
-
-        <!-- Facebook Client Token -->
-        <meta-data
-            android:name="com.facebook.sdk.ClientToken"
-            android:value="@string/facebook_client_token"/>
+        <!-- Meta (Facebook) Audience Network: bidding via AdMob ko yahan kisi
+             App ID / Client Token meta-data ki zaroorat NahI hai — adapter
+             (gma_mediation_meta) + AdMob console me Meta bidding ad source
+             kaafi hai. FAN SDK apni AudienceNetworkActivity khud manifest-merge
+             karta hai. -->
 
         <activity
             android:name=".MainActivity"
@@ -49,12 +39,6 @@
             </intent-filter>
 
         </activity>
-
-        <!-- Facebook Audience Network Activity -->
-        <activity
-            android:name="com.facebook.ads.AudienceNetworkActivity"
-            android:exported="false"
-            android:hardwareAccelerated="true" />
 
         <!-- Flutter Embedding -->
         <meta-data

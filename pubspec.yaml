@@ -58,6 +58,10 @@ dependencies:
   cached_network_image: ^3.4.1
 #  purchases_flutter: ^9.5.0
   google_mobile_ads: ^6.0.0
+  # Meta (Facebook) Audience Network bidding adapter for AdMob mediation.
+  # Adapter auto-registers with the GMA SDK; Meta bidding must also be added
+  # as an ad source in the AdMob console mediation group.
+  gma_mediation_meta: ^1.5.0
   carousel_slider: ^5.1.1
 #  flutter_image_compress: ^2.4.0
 #  image: ^4.5.0

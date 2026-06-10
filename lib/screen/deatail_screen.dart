@@ -7,6 +7,7 @@ import 'package:promptseen/Admob/Admob_service.dart';
 import 'package:promptseen/Admob/app_config.dart';
 import 'package:promptseen/controller/detail_controller.dart';
 import 'package:promptseen/service/review_service.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DetailScreen extends GetView<DetailController> {
@@ -914,13 +915,12 @@ class DetailScreen extends GetView<DetailController> {
               fit: BoxFit.cover,
               height: 380,
               width: double.infinity,
-              placeholder: (context, url) => Container(
-                height: 380,
-                color: _bgCard,
-                child: Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(_purple),
-                  ),
+              placeholder: (context, url) => Shimmer.fromColors(
+                baseColor: _bgCard,
+                highlightColor: const Color(0xFF252A45),
+                child: Container(
+                  height: 380,
+                  color: _bgCard,
                 ),
               ),
               errorWidget: (context, url, error) => Container(
@@ -1768,111 +1768,110 @@ class _MorePromptsSection extends StatelessWidget {
           ),
           const SizedBox(height: 14),
 
-          // Horizontal list
-          SizedBox(
-            height: 200,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (ctx, i) {
-                final p = items[i];
-                return GestureDetector(
-                  onTap: () => controller.openPrompt(p),
-                  child: SizedBox(
-                    width: 140,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: Container(
-                                width: 140,
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  color: _bgCard,
-                                  border: Border.all(color: _border),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: p.imageUrl.isEmpty
-                                    ? const Icon(Icons.image_outlined,
-                                        color: Colors.white24, size: 32)
-                                    : CachedNetworkImage(
-                                        imageUrl: p.imageUrl,
-                                        fit: BoxFit.cover,
-                                        placeholder: (c, u) => const Center(
-                                          child: SizedBox(
-                                            width: 22,
-                                            height: 22,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(_purple),
-                                            ),
-                                          ),
-                                        ),
-                                        errorWidget: (c, u, e) => const Icon(
-                                            Icons.broken_image_outlined,
-                                            color: Colors.white24,
-                                            size: 32),
-                                      ),
-                              ),
-                            ),
-                            // Rating badge
-                            Positioned(
-                              top: 6,
-                              right: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.7),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.star_rounded,
-                                        color: Color(0xFFFFD700), size: 12),
-                                    SizedBox(width: 2),
-                                    Text(
-                                      '4.8',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          p.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            height: 1.25,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+          // 2-column grid — saare related prompts ek saath dikhte hain
+          // (pehle horizontal list thi, ab 2 image per row).
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: items.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 16,
+              mainAxisExtent: 230,
             ),
+            itemBuilder: (ctx, i) {
+              final p = items[i];
+              return GestureDetector(
+                onTap: () => controller.openPrompt(p),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                color: _bgCard,
+                                border: Border.all(color: _border),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: p.imageUrl.isEmpty
+                                  ? const Icon(Icons.image_outlined,
+                                      color: Colors.white24, size: 32)
+                                  : CachedNetworkImage(
+                                      imageUrl: p.imageUrl,
+                                      fit: BoxFit.cover,
+                                      placeholder: (c, u) =>
+                                          Shimmer.fromColors(
+                                        baseColor: _bgCard,
+                                        highlightColor:
+                                            const Color(0xFF252A45),
+                                        child: Container(color: _bgCard),
+                                      ),
+                                      errorWidget: (c, u, e) => const Icon(
+                                          Icons.broken_image_outlined,
+                                          color: Colors.white24,
+                                          size: 32),
+                                    ),
+                            ),
+                          ),
+                          // Rating badge
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.star_rounded,
+                                      color: Color(0xFFFFD700), size: 12),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '4.8',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      p.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.25,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),

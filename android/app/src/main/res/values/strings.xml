@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Facebook Configuration -->
-    <string name="facebook_app_id">YOUR_FACEBOOK_APP_ID</string>
-    <string name="facebook_client_token">YOUR_FACEBOOK_CLIENT_TOKEN</string>
+    <!-- Meta Audience Network bidding via AdMob needs no Facebook App ID /
+         Client Token here; the gma_mediation_meta adapter handles it. -->
 </resources>

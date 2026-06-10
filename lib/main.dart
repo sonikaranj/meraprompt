@@ -8,7 +8,6 @@ import 'package:promptseen/Admob/app_config.dart';
 import 'package:promptseen/routes.dart';
 import 'package:promptseen/service/connectivity_service.dart';
 import 'package:promptseen/service/notification_service.dart';
-import 'package:promptseen/service/ad_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'const.dart';
@@ -26,13 +25,11 @@ Future<void> main() async {
   final notificationService = NotificationService();
   await notificationService.initNotifications();
 
-  // Initialize Ad Service
-  final adService = AdService();
-  await adService.initialize();
-
+  // Ads: MobileAds init + saare ad loads AdController (lib/Admob) karta hai,
+  // jo splash par register hota hai. Yahan koi alag AdService nahi —
+  // purana wala fake ad unit IDs par har 45s requests fire karta tha.
   Get.put(ConnectivityService(), permanent: true);
   Get.put(notificationService, permanent: true);
-  Get.put(adService, permanent: true);
 
   runApp(const MyApp());
 }
@@ -56,6 +53,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     // App start hone par check karo agar 1 hour baad open ho raha hai
     _notificationService.checkAndNotifyIfAppClosedFor1Hour();
+
+    // iOS: ATT prompt — bina iske Meta/AdMob ko IDFA nahi milta aur
+    // personalized ads (high eCPM) band rehte hain. Android par no-op.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initATT());
   }
 
   @override
@@ -322,7 +323,7 @@ class _NoInternetOverlay extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () => connectivityService.recheck(),
                       child: const Text(
                         'Try Again',
                         style: TextStyle(

@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:promptseen/Admob/app_config.dart';
-
-import 'app_config.dart';
+import 'package:promptseen/service/connectivity_service.dart';
 
 
 /// =====================
@@ -62,7 +63,7 @@ class AdHelper {
 /// =====================
 /// AD CONTROLLER
 /// =====================
-class AdController extends GetxController {
+class AdController extends GetxController with WidgetsBindingObserver {
   // Banner / MREC ab AdController me owned nahi — [MrecAdBox] widget khud
   // manage karta hai (neeche).
   RewardedAd? rewardedAd;
@@ -138,30 +139,126 @@ class AdController extends GetxController {
     return true;
   }
 
+  /// Net hai ya nahi. ConnectivityService registered na ho to true maan lete
+  /// hain (load attempt SDK khud handle karega).
+  bool get isOnline => !Get.isRegistered<ConnectivityService>() ||
+      Get.find<ConnectivityService>().isConnected.value;
+
+  /// Google Ad Inspector kholta hai — bidding debug karne ka OFFICIAL tareeka.
+  /// Har ad unit ke saare ad sources dikhte hain: kisne bid kiya, kisne fill
+  /// kiya, aur jo source skip hua uska exact error (e.g. Meta "no fill" /
+  /// "not configured"). Sirf registered test device par khulta hai
+  /// (debug build me emulator/test device chalega).
+  void openAdInspector() {
+    MobileAds.instance.openAdInspector((error) {
+      if (error != null) {
+        print('❌ Ad Inspector: ${error.message} (${error.code})');
+      }
+    });
+  }
+
+  /// Kis network ne ye ad fill ki (AdMob / Meta / ...). Bidding debug karne
+  /// ke liye — logcat me "via Facebook Audience Network" dikhe to Meta ka
+  /// bid jeeta.
+  static String adSourceOf(Ad ad) {
+    final info = ad.responseInfo?.loadedAdapterResponseInfo;
+    if (info == null) return 'unknown';
+    final source = info.adSourceName;
+    return source.isNotEmpty ? source : info.adapterClassName;
+  }
+
   /// =====================
   /// INIT
   /// =====================
   @override
   void onInit() {
     super.onInit();
+    // App resume par App Open ad dikhane ke liye lifecycle observe karo.
+    WidgetsBinding.instance.addObserver(this);
+    _gatherConsentThenInit();
+    _retryWhenBackOnline();
+  }
 
-    MobileAds.instance.initialize();
+  /// GDPR/UMP consent: EU/UK users ko Google ka consent form dikhana zaroori
+  /// he — bina iske wahan ads serve nahi hoti (revenue loss + policy issue).
+  /// Non-EU regions me form required nahi hota, flow seedha aage badhta he.
+  /// Consent fail ho jaye to bhi SDK init karte hain (limited ads chalti hain).
+  void _gatherConsentThenInit() {
+    ConsentInformation.instance.requestConsentInfoUpdate(
+      ConsentRequestParameters(),
+      () async {
+        try {
+          if (await ConsentInformation.instance.isConsentFormAvailable()) {
+            await ConsentForm.loadAndShowConsentFormIfRequired((formError) {
+              if (formError != null) {
+                print('⚠️ Consent form: ${formError.message}');
+              }
+            });
+          }
+        } catch (e) {
+          print('⚠️ Consent flow error: $e');
+        }
+        _initMobileAds();
+      },
+      (formError) {
+        print('⚠️ Consent info update failed: ${formError.message}');
+        _initMobileAds();
+      },
+    );
+  }
 
-    Future.delayed(const Duration(seconds: 1), () {
-      // Only load ads if user is not premium (or forceShowAdsForPremium is true)
-      if (shouldShowAds()) {
-        // NOTE: Banner / MREC ab yahaan owned nahi hai. Har placement
-        // self-contained [MrecAdBox] widget use karta hai (file ke neeche),
-        // jo apna BannerAd khud create/dispose karta hai. Ek shared BannerAd ko
-        // rebuild hone wale AdWidget me wrap karna hi
-        // "This AdWidget is already in the Widget tree" crash deta tha.
-        loadInterstitialAd();
-        loadRewardedAd();
-        loadRewardedInterstitialAd();
-        loadAndShowAppOpenFirstTime();
-        print("✅ Ads loaded");
-      } else {
-        print("⭐ Premium user - Ads disabled");
+  bool _sdkStarted = false;
+
+  Future<void> _initMobileAds() async {
+    if (_sdkStarted) return;
+    _sdkStarted = true;
+    // Debug build: real device ko test device bana do taaki live ad unit IDs
+    // par bhi sirf test ads aayein (invalid-traffic / account ban se bachav).
+    // Emulator AdMob ke liye automatically test device hota hai. Apne phone ka
+    // hash logcat me "RequestConfiguration.Builder.setTestDeviceIds" line se
+    // milta hai — use neeche list me daalo.
+    if (kDebugMode) {
+      await MobileAds.instance.updateRequestConfiguration(
+        RequestConfiguration(testDeviceIds: <String>[
+          // 'YOUR_DEVICE_HASH',
+        ]),
+      );
+    }
+
+    final status = await MobileAds.instance.initialize();
+    // Mediation adapters ka init state — Meta (Facebook) adapter yahan
+    // "ready" dikhna chahiye, warna bidding kaam nahi karegi.
+    status.adapterStatuses.forEach((name, adapter) {
+      print('🔌 Adapter $name: ${adapter.state.name} (${adapter.description})');
+    });
+
+    // Only load ads if user is not premium (or forceShowAdsForPremium is true)
+    if (shouldShowAds()) {
+      // NOTE: Banner / MREC ab yahaan owned nahi hai. Har placement
+      // self-contained [MrecAdBox] widget use karta hai (file ke neeche),
+      // jo apna BannerAd khud create/dispose karta hai. Ek shared BannerAd ko
+      // rebuild hone wale AdWidget me wrap karna hi
+      // "This AdWidget is already in the Widget tree" crash deta tha.
+      loadInterstitialAd();
+      loadRewardedAd();
+      loadRewardedInterstitialAd();
+      loadAndShowAppOpenFirstTime();
+      print("✅ Ads loaded");
+    } else {
+      print("⭐ Premium user - Ads disabled");
+    }
+  }
+
+  /// Net wapas aate hi khali pools dobara bhar do (offline me load attempts
+  /// skip hote hain, isliye yahi ek hi re-entry point chahiye).
+  void _retryWhenBackOnline() {
+    if (!Get.isRegistered<ConnectivityService>()) return;
+    ever(Get.find<ConnectivityService>().isConnected, (bool connected) {
+      if (connected && shouldShowAds()) {
+        print('🌐 Back online - refilling ad pools');
+        _preloadInterstitials();
+        _preloadRewarded();
+        if (rewardedAd == null) loadRewardedAd();
       }
     });
   }
@@ -178,6 +275,12 @@ class AdController extends GetxController {
   void _preloadInterstitials() {
     if (!shouldShowAds()) {
       print("⭐ Premium user - Interstitial ads disabled");
+      return;
+    }
+    // Offline me request bhejna bekaar hai — net wapas aane par
+    // [_retryWhenBackOnline] pool khud bhar dega.
+    if (!isOnline) {
+      print("📵 Offline - interstitial preload skipped");
       return;
     }
     while (_interstitialPool.length + _interstitialLoadsInFlight <
@@ -197,13 +300,15 @@ class AdController extends GetxController {
           _interstitialLoadsInFlight--;
           _interstitialPool.add(ad);
           isInterstitialReady.value = _interstitialPool.isNotEmpty;
-          print("✅ Interstitial ready (pool: ${_interstitialPool.length})");
+          print("✅ Interstitial ready (pool: ${_interstitialPool.length}) "
+              "via ${adSourceOf(ad)}");
         },
         onAdFailedToLoad: (error) {
           _interstitialLoadsInFlight--;
           isInterstitialReady.value = _interstitialPool.isNotEmpty;
           print("❌ Interstitial failed: $error");
-          // Thodi der baad pool dobara bharne ki koshish.
+          // Thodi der baad pool dobara bharne ki koshish (offline me
+          // _preloadInterstitials khud skip kar dega).
           Future.delayed(const Duration(seconds: 30), _preloadInterstitials);
         },
       ),
@@ -237,6 +342,12 @@ class AdController extends GetxController {
     // Pool me ad ready hai → turant show.
     if (_interstitialPool.isNotEmpty) {
       _showFromPool(onComplete);
+      return;
+    }
+
+    // Offline → loader dikha kar wait karna bekaar hai, seedha aage badho.
+    if (!isOnline) {
+      onComplete();
       return;
     }
 
@@ -381,6 +492,10 @@ class AdController extends GetxController {
       print("⭐ Premium user - Rewarded ads disabled");
       return;
     }
+    if (!isOnline) {
+      print("📵 Offline - rewarded load skipped");
+      return;
+    }
 
     RewardedAd.load(
       adUnitId: AdHelper.rewardedAdUnitId,
@@ -432,6 +547,10 @@ class AdController extends GetxController {
       print("⭐ Premium user - Rewarded interstitial ads disabled");
       return;
     }
+    if (!isOnline) {
+      print("📵 Offline - rewarded preload skipped");
+      return;
+    }
     while (_rewardedPool.length + _rewardedLoadsInFlight <
         _rewardedPoolTarget) {
       _loadOneRewarded();
@@ -450,7 +569,8 @@ class AdController extends GetxController {
           _rewardedLoadsInFlight--;
           _rewardedPool.add(ad);
           isRewardedInterstitialReady.value = _rewardedPool.isNotEmpty;
-          print("✅ Rewarded ready (pool: ${_rewardedPool.length})");
+          print("✅ Rewarded ready (pool: ${_rewardedPool.length}) "
+              "via ${adSourceOf(ad)}");
         },
         onAdFailedToLoad: (error) {
           _rewardedLoadsInFlight--;
@@ -489,6 +609,12 @@ class AdController extends GetxController {
     // Pool me ad ready → turant show, koi loading dialog nahi.
     if (_rewardedPool.isNotEmpty) {
       _showRewardedFromPool(onReward: (_) => onReward(), failOpen: onReward);
+      return;
+    }
+
+    // Offline → wait mat karo, fail-open (unlock) taaki user block na ho.
+    if (!isOnline) {
+      onReward();
       return;
     }
 
@@ -546,11 +672,99 @@ class AdController extends GetxController {
   }
 
   /// =====================
-  /// APP OPEN
+  /// APP OPEN (first launch + resume)
   /// =====================
+  /// Resume par bhi App Open dikhana eCPM ka bada win he — par frequency
+  /// caps ke saath, warna users irritate ho kar uninstall karte hain:
+  /// - kam se kam [_appOpenMinBackground] background me raha ho
+  /// - do shows ke beech [_appOpenCooldown] ka gap
+  /// - 4 ghante purani cached ad expire (Google policy)
+  static const Duration _appOpenMinBackground = Duration(seconds: 30);
+  static const Duration _appOpenCooldown = Duration(minutes: 4);
+  static const Duration _appOpenMaxAge = Duration(hours: 4);
+
+  DateTime? _appOpenLoadTime;
+  DateTime? _appOpenLastShownAt;
+  DateTime? _pausedAt;
+  bool _isShowingAppOpen = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _pausedAt = DateTime.now();
+    } else if (state == AppLifecycleState.resumed) {
+      _maybeShowAppOpenOnResume();
+    }
+  }
+
+  void _maybeShowAppOpenOnResume() {
+    // Ad khud full-screen dikh rahi thi to wapas aana "resume" nahi he.
+    if (_isShowingAppOpen) return;
+    if (!shouldShowAds()) return;
+
+    final pausedAt = _pausedAt;
+    _pausedAt = null;
+    if (pausedAt == null ||
+        DateTime.now().difference(pausedAt) < _appOpenMinBackground) {
+      return;
+    }
+    final lastShown = _appOpenLastShownAt;
+    if (lastShown != null &&
+        DateTime.now().difference(lastShown) < _appOpenCooldown) {
+      return;
+    }
+
+    // Purani cached ad expire kar do (4h limit), fresh load karo.
+    final loadedAt = _appOpenLoadTime;
+    if (_isAppOpenAdReady &&
+        loadedAt != null &&
+        DateTime.now().difference(loadedAt) > _appOpenMaxAge) {
+      _appOpenAd?.dispose();
+      _appOpenAd = null;
+      _isAppOpenAdReady = false;
+    }
+
+    if (_isAppOpenAdReady && _appOpenAd != null) {
+      _showAppOpen();
+    } else {
+      // Abhi ready nahi — agli baar ke liye load kar do.
+      loadAppOpenAd();
+    }
+  }
+
+  void _showAppOpen() {
+    final ad = _appOpenAd;
+    if (ad == null) return;
+    _isShowingAppOpen = true;
+    _appOpenLastShownAt = DateTime.now();
+    ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _afterAppOpenClosed();
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        _afterAppOpenClosed();
+      },
+    );
+    ad.show();
+  }
+
+  void _afterAppOpenClosed() {
+    _isShowingAppOpen = false;
+    _appOpenAd = null;
+    _isAppOpenAdReady = false;
+    // Agla resume aane se pehle ad ready rakho.
+    loadAppOpenAd();
+  }
+
   void loadAppOpenAd() {
     if (!shouldShowAds()) {
       print("⭐ Premium user - App open ads disabled");
+      return;
+    }
+    if (!isOnline) {
+      print("📵 Offline - app open load skipped");
       return;
     }
 
@@ -561,6 +775,7 @@ class AdController extends GetxController {
         onAdLoaded: (ad) {
           _appOpenAd = ad;
           _isAppOpenAdReady = true;
+          _appOpenLoadTime = DateTime.now();
         },
         onAdFailedToLoad: (_) => _isAppOpenAdReady = false,
       ),
@@ -583,7 +798,7 @@ class AdController extends GetxController {
 
     await Future.delayed(const Duration(seconds: 2));
     if (_isAppOpenAdReady && _appOpenAd != null) {
-      _appOpenAd!.show();
+      _showAppOpen();
     }
     isFirstTime = false;
   }
@@ -608,6 +823,7 @@ class AdController extends GetxController {
   /// =====================
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     for (final ad in _interstitialPool) {
       ad.dispose();
     }
@@ -654,12 +870,22 @@ class MrecAdBox extends StatefulWidget {
 class _MrecAdBoxState extends State<MrecAdBox> {
   BannerAd? _ad;
   bool _loaded = false;
+  bool _loading = false;
   bool _disposed = false;
+  StreamSubscription<bool>? _connSub;
 
   @override
   void initState() {
     super.initState();
     _loadAd();
+    // Offline me load fail ho jaati hai aur widget hamesha khaali reh jata
+    // tha — net wapas aate hi dobara try karo.
+    if (Get.isRegistered<ConnectivityService>()) {
+      _connSub =
+          Get.find<ConnectivityService>().isConnected.listen((connected) {
+        if (connected && !_loaded && !_loading && !_disposed) _loadAd();
+      });
+    }
   }
 
   void _loadAd() {
@@ -668,24 +894,28 @@ class _MrecAdBoxState extends State<MrecAdBox> {
     final unitId = widget.adUnitId.trim();
     if (unitId.isEmpty) return;
 
+    _loading = true;
     BannerAd(
       adUnitId: unitId,
       size: AdSize.mediumRectangle,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
+          _loading = false;
           // Agar widget load hone se pehle hat gaya, to ad ko dead State se
           // attach karne ke bajaye discard kar do.
           if (_disposed) {
             ad.dispose();
             return;
           }
+          debugPrint("✅ MREC loaded via ${AdController.adSourceOf(ad)}");
           setState(() {
             _ad = ad as BannerAd;
             _loaded = true;
           });
         },
         onAdFailedToLoad: (ad, error) {
+          _loading = false;
           debugPrint("❌ MREC Ad failed to load: ${error.message}");
           ad.dispose();
           if (!_disposed && mounted) {
@@ -702,6 +932,7 @@ class _MrecAdBoxState extends State<MrecAdBox> {
   @override
   void dispose() {
     _disposed = true;
+    _connSub?.cancel();
     _ad?.dispose();
     super.dispose();
   }
@@ -715,6 +946,135 @@ class _MrecAdBoxState extends State<MrecAdBox> {
       child: SizedBox(
         width: 300,
         height: 250,
+        child: AdWidget(ad: _ad!),
+      ),
+    );
+  }
+}
+
+/// =====================
+/// NATIVE AD BOX (self-contained, medium template)
+/// =====================
+/// MREC se zyada eCPM deta he kyunki content jaisa blend hota he. [MrecAdBox]
+/// jaisa hi self-contained he — apna [NativeAd] khud own/dispose karta he,
+/// fail hone par net wapas aane par retry karta he, aur load na ho to khaali
+/// (zero-height) rehta he.
+class NativeAdBox extends StatefulWidget {
+  /// Load karne wali REAL native ad unit id (config se). Khali ho to kuch
+  /// nahi dikhta.
+  final String adUnitId;
+
+  final EdgeInsetsGeometry margin;
+
+  const NativeAdBox({
+    super.key,
+    required this.adUnitId,
+    this.margin = const EdgeInsets.symmetric(vertical: 16),
+  });
+
+  @override
+  State<NativeAdBox> createState() => _NativeAdBoxState();
+}
+
+class _NativeAdBoxState extends State<NativeAdBox> {
+  NativeAd? _ad;
+  bool _loaded = false;
+  bool _loading = false;
+  bool _disposed = false;
+  StreamSubscription<bool>? _connSub;
+
+  // App ke dark theme se matching template colors.
+  static const Color _bg = Color(0xFF13152B);
+  static const Color _accent = Color(0xFF38BDF8);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAd();
+    if (Get.isRegistered<ConnectivityService>()) {
+      _connSub =
+          Get.find<ConnectivityService>().isConnected.listen((connected) {
+        if (connected && !_loaded && !_loading && !_disposed) _loadAd();
+      });
+    }
+  }
+
+  void _loadAd() {
+    final unitId = widget.adUnitId.trim();
+    if (unitId.isEmpty) return;
+
+    _loading = true;
+    NativeAd(
+      adUnitId: unitId,
+      request: const AdRequest(),
+      nativeTemplateStyle: NativeTemplateStyle(
+        templateType: TemplateType.medium,
+        mainBackgroundColor: _bg,
+        cornerRadius: 14,
+        callToActionTextStyle: NativeTemplateTextStyle(
+          textColor: Colors.white,
+          backgroundColor: _accent,
+          size: 15,
+        ),
+        primaryTextStyle: NativeTemplateTextStyle(
+          textColor: Colors.white,
+          size: 15,
+        ),
+        secondaryTextStyle: NativeTemplateTextStyle(
+          textColor: Colors.white70,
+          size: 13,
+        ),
+        tertiaryTextStyle: NativeTemplateTextStyle(
+          textColor: Colors.white54,
+          size: 12,
+        ),
+      ),
+      listener: NativeAdListener(
+        onAdLoaded: (ad) {
+          _loading = false;
+          if (_disposed) {
+            ad.dispose();
+            return;
+          }
+          debugPrint("✅ Native loaded via ${AdController.adSourceOf(ad)}");
+          setState(() {
+            _ad = ad as NativeAd;
+            _loaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          _loading = false;
+          debugPrint("❌ Native Ad failed to load: ${error.message}");
+          ad.dispose();
+          if (!_disposed && mounted) {
+            setState(() {
+              _ad = null;
+              _loaded = false;
+            });
+          }
+        },
+      ),
+    ).load();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _connSub?.cancel();
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_loaded || _ad == null) return const SizedBox.shrink();
+    return Container(
+      margin: widget.margin,
+      alignment: Alignment.center,
+      // Medium template ki recommended height 320 he.
+      child: SizedBox(
+        height: 320,
+        width: double.infinity,
         child: AdWidget(ad: _ad!),
       ),
     );

@@ -18,6 +18,9 @@ class ConnectivityService extends GetxService {
     _updateConnectivity(results);
   }
 
+  /// Manual re-check (e.g. "Try Again" button on the no-internet screen).
+  Future<void> recheck() => _checkConnectivity();
+
   void _updateConnectivity(List<ConnectivityResult> results) {
     isConnected.value = !results.contains(ConnectivityResult.none);
   }
